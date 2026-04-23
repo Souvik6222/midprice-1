@@ -7,6 +7,8 @@ import PatientHome from '../pages/patient/Home';
 import SearchResults from '../pages/patient/SearchResults';
 import MedicineDetail from '../pages/patient/MedicineDetail';
 import Reservation from '../pages/patient/Reservation';
+import VendorLayout from '../layouts/VendorLayout';
+import VendorDashboard from '../pages/vendor/Dashboard';
 
 function AppRoutes() {
   return (
@@ -22,6 +24,12 @@ function AppRoutes() {
         <Route path="search" element={<SearchResults />} />
         <Route path="medicine/:id" element={<MedicineDetail />} />
         <Route path="reserve/:medicineId" element={<Reservation />} />
+      </Route>
+
+      {/* Vendor routes */}
+      <Route path="/vendor" element={<VendorLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<VendorDashboard />} />
       </Route>
     </Routes>
   );
