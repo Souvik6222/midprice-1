@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const medicineRoutes = require('./routes/medicineRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.get('/api/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/medicines', medicineRoutes);
+app.use('/api/vendor/inventory', inventoryRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
