@@ -1,7 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../../lib/api';
-import useAuthStore from '../../store/authStore';
 
 const styles = {
   container: {
@@ -205,19 +203,15 @@ function Login() {
   const location = useLocation();
   const navigate = useNavigate();
   const role = location.state?.role || 'patient';
-  const setUser = useAuthStore((state) => state.setUser);
 
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('9733064817');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const otpRefs = useRef([]);
 
   const handleSendOtp = () => {
     if (phone.length >= 10) {
       setOtpSent(true);
-      setError('');
     }
   };
 
@@ -240,52 +234,16 @@ function Login() {
     }
   };
 
-  const handleVerify = async () => {
+  const handleVerify = () => {
     const otpValue = otp.join('');
-    setLoading(true);
-    setError('');
-
-    try {
-      // First try login
-      const { data } = await api.post('/api/auth/login', {
-        phone,
-        otp: otpValue,
-      });
-
-      setUser(data.user, data.token);
-
-      if (data.user.role === 'vendor') {
-        navigate('/vendor/dashboard');
-      } else {
-        navigate('/patient/home');
-      }
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
-
-      // If user not found, auto-register
-      if (err.response?.status === 404) {
-        try {
-          const { data } = await api.post('/api/auth/register', {
-            phone,
-            name: phone,
-            role: role === 'pharmacy' ? 'vendor' : role,
-          });
-
-          setUser(data.user, data.token);
-
-          if (data.user.role === 'vendor') {
-            navigate('/vendor/dashboard');
-          } else {
-            navigate('/patient/home');
-          }
-        } catch (regErr) {
-          setError(regErr.response?.data?.message || 'Registration failed');
-        }
-      } else {
-        setError(msg);
-      }
-    } finally {
-      setLoading(false);
+    console.log('Verifying OTP:', otpValue, 'for role:', role);
+    
+    // Redirect to the appropriate dashboard based on role
+    if (role === 'patient') {
+      navigate('/patient/home');
+    } else {
+      // Fallback for pharmacy/vendor if those aren't fully built yet
+      navigate('/patient/home');
     }
   };
 
@@ -376,27 +334,21 @@ function Login() {
               <button
                 style={{
                   ...styles.verifyBtn,
-                  ...((!isOtpComplete || loading)
+                  ...(!isOtpComplete
                     ? { background: '#d1d5db', cursor: 'not-allowed', boxShadow: 'none' }
                     : {}),
                 }}
-                disabled={!isOtpComplete || loading}
+                disabled={!isOtpComplete}
                 onClick={handleVerify}
                 onMouseEnter={(e) => {
-                  if (isOtpComplete && !loading) e.currentTarget.style.background = '#178c65';
+                  if (isOtpComplete) e.currentTarget.style.background = '#178c65';
                 }}
                 onMouseLeave={(e) => {
-                  if (isOtpComplete && !loading) e.currentTarget.style.background = '#1D9E75';
+                  if (isOtpComplete) e.currentTarget.style.background = '#1D9E75';
                 }}
               >
-                {loading ? 'Verifying...' : 'Verify & Login'}
+                Verify & Login
               </button>
-
-              {error && (
-                <div style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '0.75rem', fontWeight: 500 }}>
-                  {error}
-                </div>
-              )}
 
               <div style={styles.resendRow}>
                 Didn't receive OTP?{' '}
@@ -404,7 +356,7 @@ function Login() {
                   style={styles.resendLink}
                   onClick={() => {
                     setOtp(['', '', '', '', '', '']);
-                    setError('');
+                    console.log('Resending OTP...');
                   }}
                 >
                   Resend

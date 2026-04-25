@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import api from '../../lib/api';
+import { useParams, useNavigate } from 'react-router-dom';
+
+/* ── Dummy data ── */
+const medicineData = {
+  name: 'Metformin 500mg',
+  dosage: '500mg',
+  packSize: 'Strip of 15 tablets',
+  mrp: 145,
+  sellingPrice: 85,
+};
+
+const pharmacyInfo = {
+  name: 'Wellness Forever',
+  address: '23, Salt Lake City, Sector V, Kolkata - 700091',
+  timing: '8:00 AM – 10:00 PM',
+  phone: '+91 98765 43210',
+};
 
 /* ── Step labels ── */
 const steps = ['Select Medicine', 'Confirm Details', 'Done'];
@@ -319,54 +334,18 @@ const s = {
     transition: 'background 0.2s ease',
     boxShadow: '0 4px 14px rgba(29,158,117,0.3)',
   },
-  error: {
-    color: '#ef4444',
-    fontSize: '0.85rem',
-    marginTop: '0.5rem',
-    fontWeight: 500,
-  },
 };
 
 function Reservation() {
   const { medicineId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const [step, setStep] = useState(2);
   const [qty, setQty] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [reservationCode, setReservationCode] = useState('');
 
-  // Read data passed from navigation state
-  const medicine = location.state?.medicine || { name: 'Medicine', id: medicineId };
-  const pharmacy = location.state?.pharmacy || { name: 'Pharmacy', address: '', hours: '' };
-  const mrp = location.state?.mrp || 145;
-  const sellingPrice = location.state?.sellingPrice || 85;
-
-  const totalMrp = mrp * qty;
-  const totalPrice = sellingPrice * qty;
+  const unitPrice = medicineData.sellingPrice;
+  const totalMrp = medicineData.mrp * qty;
+  const totalPrice = unitPrice * qty;
   const totalDiscount = totalMrp - totalPrice;
-
-  /* ── Handle confirm reservation ── */
-  const handleConfirm = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      const { data } = await api.post('/api/reservations', {
-        pharmacyId: pharmacy.id,
-        medicineId: medicine.id || medicineId,
-        qty,
-      });
-
-      setReservationCode(data.reservationCode);
-      setStep(3);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create reservation');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   /* ── Render step indicator ── */
   const renderSteps = () => (
@@ -423,12 +402,12 @@ function Reservation() {
           <div style={s.card}>
             <div style={s.cardTitle}>📋 Order Summary</div>
 
-            <div style={s.medName}>{medicine.name}</div>
+            <div style={s.medName}>{medicineData.name}</div>
             <div style={s.medMeta}>
-              {medicine.dosage || ''} · {medicine.packSize || ''}
+              {medicineData.dosage} · {medicineData.packSize}
             </div>
-            <div style={s.pharmacyRow}>🏪 {pharmacy.name}</div>
-            <div style={s.addressRow}>📍 {pharmacy.address}</div>
+            <div style={s.pharmacyRow}>🏪 {pharmacyInfo.name}</div>
+            <div style={s.addressRow}>📍 {pharmacyInfo.address}</div>
 
             {/* Quantity stepper */}
             <div style={s.qtyLabel}>Quantity</div>
@@ -473,31 +452,23 @@ function Reservation() {
 
           {/* Confirm button */}
           <button
-            style={{
-              ...s.confirmBtn,
-              ...(loading ? { background: '#d1d5db', cursor: 'not-allowed' } : {}),
-            }}
-            disabled={loading}
-            onClick={handleConfirm}
-            onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.background = '#178c65';
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) e.currentTarget.style.background = '#1D9E75';
-            }}
+            style={s.confirmBtn}
+            onClick={() => setStep(3)}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#178c65')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#1D9E75')}
           >
-            {loading ? 'Confirming...' : 'Confirm Reservation'}
+            Confirm Reservation
           </button>
-          {error && <div style={s.error}>{error}</div>}
         </div>
 
         {/* Right: Pharmacy Info */}
         <div style={s.rightCol}>
           <div style={s.card}>
             <div style={s.cardTitle}>🏪 Pharmacy Details</div>
-            <div style={s.phName}>{pharmacy.name}</div>
-            <div style={s.phDetail}>📍 {pharmacy.address}</div>
-            <div style={s.phDetail}>🕐 {pharmacy.hours}</div>
+            <div style={s.phName}>{pharmacyInfo.name}</div>
+            <div style={s.phDetail}>📍 {pharmacyInfo.address}</div>
+            <div style={s.phDetail}>🕐 {pharmacyInfo.timing}</div>
+            <div style={s.phDetail}>📞 {pharmacyInfo.phone}</div>
 
             <button
               style={s.callBtn}
@@ -523,7 +494,7 @@ function Reservation() {
         </div>
 
         <div style={s.codeLabel}>Reservation Code</div>
-        <div style={s.codeValue}>{reservationCode}</div>
+        <div style={s.codeValue}>MED-2024-00142</div>
 
         <div style={s.qrPlaceholder}>QR — Show at counter</div>
 

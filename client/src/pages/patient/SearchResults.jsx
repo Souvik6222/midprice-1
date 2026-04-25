@@ -1,11 +1,86 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import api from '../../lib/api';
+import React, { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+/* ── Hardcoded medicine results ── */
+const allResults = [
+  {
+    id: 1,
+    name: 'Metformin 500mg',
+    dosage: '500mg',
+    packSize: 'Strip of 15 tablets',
+    pharmacy: 'Apollo Pharmacy',
+    distance: '0.8 km',
+    mrp: 145,
+    price: 98,
+    inStock: true,
+    isGeneric: true,
+    openNow: true,
+    withinRange: true,
+  },
+  {
+    id: 2,
+    name: 'Metformin 500mg',
+    dosage: '500mg',
+    packSize: 'Strip of 15 tablets',
+    pharmacy: 'MedPlus',
+    distance: '1.2 km',
+    mrp: 145,
+    price: 112,
+    inStock: true,
+    isGeneric: false,
+    openNow: true,
+    withinRange: true,
+  },
+  {
+    id: 3,
+    name: 'Metformin 500mg',
+    dosage: '500mg',
+    packSize: 'Strip of 15 tablets',
+    pharmacy: 'Wellness Forever',
+    distance: '2.5 km',
+    mrp: 145,
+    price: 85,
+    inStock: true,
+    isGeneric: true,
+    openNow: false,
+    withinRange: false,
+  },
+  {
+    id: 4,
+    name: 'Metformin 500mg',
+    dosage: '500mg',
+    packSize: 'Strip of 15 tablets',
+    pharmacy: 'NetMeds Store',
+    distance: '1.8 km',
+    mrp: 145,
+    price: 105,
+    inStock: false,
+    isGeneric: true,
+    openNow: true,
+    withinRange: true,
+  },
+  {
+    id: 5,
+    name: 'Metformin 500mg',
+    dosage: '500mg',
+    packSize: 'Strip of 15 tablets',
+    pharmacy: 'HealthKart Pharmacy',
+    distance: '0.5 km',
+    mrp: 145,
+    price: 92,
+    inStock: true,
+    isGeneric: false,
+    openNow: true,
+    withinRange: true,
+  },
+];
 
 /* ── Filter chip definitions ── */
 const filterOptions = [
-  { key: 'inStock', label: 'In Stock' },
+  { key: 'openNow', label: 'Open Now' },
+  { key: 'isGeneric', label: 'Generic Available' },
   { key: 'withinRange', label: 'Within 2km' },
+  { key: 'inStock', label: 'In Stock' },
 ];
 
 /* ── Styles ── */
@@ -211,14 +286,7 @@ const s = {
     boxShadow: '0 2px 8px rgba(29,158,117,0.25)',
   },
 
-  /* Loading & empty */
-  loading: {
-    textAlign: 'center',
-    padding: '3rem 1rem',
-    color: '#1D9E75',
-    fontSize: '1rem',
-    fontWeight: 600,
-  },
+  /* Empty state */
   empty: {
     textAlign: 'center',
     padding: '3rem 1rem',
@@ -229,39 +297,11 @@ const s = {
 
 function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const queryFromUrl = searchParams.get('q') || '';
 
   const [inputValue, setInputValue] = useState(queryFromUrl);
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('low-to-high');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  /* ── Fetch from API ── */
-  useEffect(() => {
-    if (!queryFromUrl) return;
-
-    const fetchResults = async () => {
-      setLoading(true);
-      try {
-        // Use Kolkata coordinates as default
-        const lat = 22.5726;
-        const lng = 88.3639;
-        const { data } = await api.get(
-          `/api/medicines/search?q=${encodeURIComponent(queryFromUrl)}&lat=${lat}&lng=${lng}`
-        );
-        setResults(data.results || []);
-      } catch (err) {
-        console.error('Search failed:', err);
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [queryFromUrl]);
 
   /* ── Update URL on search ── */
   const handleSearch = (e) => {
@@ -280,28 +320,36 @@ function SearchResults() {
 
   /* ── Filter + sort the list ── */
   const processedResults = useMemo(() => {
-    let filtered = [...results];
+    let results = [...allResults];
 
-    if (activeFilters.includes('inStock')) {
-      filtered = filtered.filter((r) => r.stockQty > 0);
+    // Apply active filters
+    if (activeFilters.includes('openNow')) {
+      results = results.filter((r) => r.openNow);
+    }
+    if (activeFilters.includes('isGeneric')) {
+      results = results.filter((r) => r.isGeneric);
     }
     if (activeFilters.includes('withinRange')) {
-      filtered = filtered.filter((r) => r.distance <= 2);
+      results = results.filter((r) => r.withinRange);
+    }
+    if (activeFilters.includes('inStock')) {
+      results = results.filter((r) => r.inStock);
     }
 
+    // Sort
     if (sortBy === 'low-to-high') {
-      filtered.sort((a, b) => a.sellingPrice - b.sellingPrice);
+      results.sort((a, b) => a.price - b.price);
     } else if (sortBy === 'high-to-low') {
-      filtered.sort((a, b) => b.sellingPrice - a.sellingPrice);
+      results.sort((a, b) => b.price - a.price);
     }
 
-    return filtered;
-  }, [results, activeFilters, sortBy]);
+    return results;
+  }, [activeFilters, sortBy]);
 
   /* ── Cheapest price ── */
   const cheapestPrice =
     processedResults.length > 0
-      ? Math.min(...processedResults.map((r) => r.sellingPrice))
+      ? Math.min(...processedResults.map((r) => r.price))
       : null;
 
   return (
@@ -363,26 +411,19 @@ function SearchResults() {
         {queryFromUrl ? ` for "${queryFromUrl}"` : ''}
       </div>
 
-      {/* ── Loading ── */}
-      {loading && <div style={s.loading}>🔍 Searching pharmacies near you...</div>}
-
       {/* ── Result cards ── */}
-      {!loading && processedResults.length === 0 ? (
+      {processedResults.length === 0 ? (
         <div style={s.empty}>
-          {queryFromUrl
-            ? 'No medicines found near you. Try a different name.'
-            : 'Type a medicine name and hit Search.'}
+          No medicines match your current filters. Try adjusting your search.
         </div>
       ) : (
-        !loading &&
         processedResults.map((med) => {
-          const isCheapest = med.sellingPrice === cheapestPrice;
-          const savings = med.mrp - med.sellingPrice;
-          const inStock = med.stockQty > 0;
+          const isCheapest = med.price === cheapestPrice;
+          const savings = med.mrp - med.price;
 
           return (
             <div
-              key={med.inventoryId}
+              key={med.id}
               style={{
                 ...s.card,
                 ...(isCheapest ? s.cardCheapest : {}),
@@ -401,35 +442,35 @@ function SearchResults() {
               {/* Top row: name + price */}
               <div style={s.cardTop}>
                 <div>
-                  <div style={s.medName}>{med.medicine.name} {med.medicine.dosage}</div>
+                  <div style={s.medName}>{med.name}</div>
                   <div style={s.medMeta}>
-                    {med.medicine.dosage} · {med.medicine.packSize}
+                    {med.dosage} · {med.packSize}
                   </div>
                 </div>
                 <div style={s.priceBlock}>
                   <div style={s.mrp}>₹{med.mrp}</div>
-                  <div style={s.price}>₹{med.sellingPrice}</div>
+                  <div style={s.price}>₹{med.price}</div>
                 </div>
               </div>
 
               {/* Middle row: pharmacy, stock, savings */}
               <div style={s.cardMiddle}>
-                <span style={s.pharmacyName}>{med.pharmacy.name}</span>
-                <span style={s.distance}>📍 {med.distance} km</span>
+                <span style={s.pharmacyName}>{med.pharmacy}</span>
+                <span style={s.distance}>📍 {med.distance}</span>
                 <span>
                   <span
                     style={{
                       ...s.stockDot,
-                      background: inStock ? '#22c55e' : '#ef4444',
+                      background: med.inStock ? '#22c55e' : '#ef4444',
                     }}
                   />
                   <span
                     style={{
                       ...s.stockText,
-                      color: inStock ? '#22c55e' : '#ef4444',
+                      color: med.inStock ? '#22c55e' : '#ef4444',
                     }}
                   >
-                    {inStock ? 'In Stock' : 'Out of Stock'}
+                    {med.inStock ? 'In Stock' : 'Out of Stock'}
                   </span>
                 </span>
                 {savings > 0 && (
@@ -444,7 +485,6 @@ function SearchResults() {
               <div style={s.cardBottom}>
                 <button
                   style={s.btnOutline}
-                  onClick={() => navigate(`/patient/medicine/${med.medicine.id}`)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = '#f0fdf7';
                   }}
@@ -452,20 +492,10 @@ function SearchResults() {
                     e.currentTarget.style.background = '#fff';
                   }}
                 >
-                  📊 Compare Prices
+                  📍 Get Directions
                 </button>
                 <button
                   style={s.btnFilled}
-                  onClick={() =>
-                    navigate(`/patient/reserve/${med.medicine.id}`, {
-                      state: {
-                        medicine: med.medicine,
-                        pharmacy: med.pharmacy,
-                        mrp: med.mrp,
-                        sellingPrice: med.sellingPrice,
-                      },
-                    })
-                  }
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = '#178c65';
                   }}
