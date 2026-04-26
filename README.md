@@ -51,62 +51,11 @@ I split the system into two clearly separated roles at the auth layer — **Pati
 |---|---|---|
 | Frontend Framework | React 18 | Component-based role UIs |
 | State Management | Zustand | Lightweight, no boilerplate |
-| Data Fetching | TanStack Query (React Query) | Cache + background refetch for prices |
-| Backend Framework | Node.js + Express | Unified JS stack, asynchronous performance |
+| HTTP Client | Axios | Interceptors for JWT auth |
+| Backend Framework | Node.js + Express | Unified JS stack, async performance |
 | Database | MongoDB | Document-based flexible schema |
 | ODM | Mongoose | Data schemas and validation |
 | Auth | JWT (Json Web Token) | Role claims in token payload |
-
----
-
-## File Structure
-
-```text
-medprice/
-│
-├── README.md
-├── .env.example
-│
-├── client/                            # React App (Create React App)
-│   ├── package.json
-│   ├── public/
-│   └── src/
-│       ├── App.js                     # Root component
-│       ├── index.js                   # Entry point
-│       │
-│       ├── components/                # Shared, role-agnostic components
-│       ├── hooks/                     # Custom React hooks
-│       ├── layouts/                   # Patient/Vendor layouts
-│       ├── lib/                       # API client and utilities
-│       ├── pages/                     # Application pages (auth, patient, vendor)
-│       │   └── auth/                  # Authentication pages (e.g., Login.jsx)
-│       ├── router/                    # React Router configuration
-│       └── store/                     # Zustand state stores
-│
-└── server/                            # Node.js + Express app
-    ├── package.json
-    ├── server.js                      # App entry point
-    │
-    ├── config/                        # Database configuration, etc.
-    ├── controllers/                   # Route logic (authController, etc.)
-    ├── middleware/                    # authMiddleware, etc.
-    ├── models/                        # Mongoose schemas (User, Medicine, Pharmacy, etc.)
-    ├── routes/                        # Express Router mounts
-    └── utils/                         # Helper utilities (generateToken.js)
-```
-
----
-
-## Database Schema (Key Collections)
-
-```javascript
-// Conceptual Mongoose Models
-User          { _id, name, email, password, role: 'patient'|'vendor', createdAt }
-Pharmacy      { _id, vendorId, name, location, address }
-Medicine      { _id, name, genericName, manufacturer }
-Inventory     { _id, pharmacyId, medicineId, price, stock }
-Reservation   { _id, patientId, pharmacyId, medicineId, status, createdAt }
-```
 
 ---
 
@@ -114,30 +63,136 @@ Reservation   { _id, patientId, pharmacyId, medicineId, status, createdAt }
 
 ```bash
 # 1. Clone
-git clone https://github.com/yourname/medprice.git
-cd medprice
+git clone https://github.com/Souvik6222/midprice-1.git
+cd midprice-1
 
-# 2. Environment
-# In the server directory, create a .env file based on .env.example (if available) or add:
-# PORT=5000
-# MONGO_URI=your_mongodb_connection_string
-# JWT_SECRET=your_jwt_secret
-
-# 3. Install Dependencies & Start
-# Open two terminals:
-
-# Terminal 1 - Server:
+# 2. Server setup
 cd server
+cp .env.example .env       # Edit with your MongoDB URI and JWT secret
 npm install
-npm run dev
+npm run dev                 # Runs on http://localhost:5000
 
-# Terminal 2 - Client:
+# 3. Client setup (new terminal)
 cd client
+cp .env.example .env        # Default: REACT_APP_API_URL=http://localhost:5000
 npm install
-npm start
+npm start                   # Runs on http://localhost:3000
 
-# Server runs on: http://localhost:5000
-# Client runs on: http://localhost:3000
+# 4. Seed the database (optional — adds test users + medicines)
+cd server
+node seed.js
+# Test accounts:
+#   Patient:  9876543210 / OTP: 123456
+#   Vendor 1: 9876543211 / OTP: 123456
+#   Vendor 2: 9876543212 / OTP: 123456
+```
+
+### Environment Variables
+
+**server/.env.example**
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_here
+```
+
+**client/.env.example**
+```
+REACT_APP_API_URL=http://localhost:5000
+```
+
+---
+
+## API Endpoints
+
+### Auth
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/api/auth/register` | Public | Register a new user (patient/vendor) |
+| POST | `/api/auth/login` | Public | Login with phone + OTP |
+
+### Medicine Search (Public)
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/medicines/search?q=&lat=&lng=` | Public | Search medicines near location |
+| GET | `/api/medicines/:id/prices?lat=&lng=` | Public | Price comparison for a specific medicine |
+
+### Patient Reservations
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/api/reservations` | Patient | Create a new reservation |
+| GET | `/api/reservations` | Patient | List my reservations |
+
+### Vendor Inventory
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/vendor/inventory` | Vendor | List pharmacy inventory |
+| POST | `/api/vendor/inventory` | Vendor | Add medicine to inventory |
+| PATCH | `/api/vendor/inventory/:id` | Vendor | Update price/stock |
+| DELETE | `/api/vendor/inventory/:id` | Vendor | Unlist a medicine (soft delete) |
+
+### Vendor Reservations
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/reservations/vendor?status=` | Vendor | List pharmacy reservations |
+| PATCH | `/api/reservations/vendor/:id/status` | Vendor | Update reservation status |
+
+### Health
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/api/health` | Public | Server health check |
+
+---
+
+## File Structure
+
+```text
+midprice-1/
+│
+├── README.md
+│
+├── client/                            # React App (Create React App)
+│   ├── .env.example
+│   ├── package.json
+│   ├── public/
+│   └── src/
+│       ├── App.js                     # Root component
+│       ├── index.js                   # Entry point
+│       ├── lib/api.js                 # Axios instance + JWT interceptors
+│       ├── store/authStore.js         # Zustand auth state
+│       ├── router/
+│       │   ├── index.jsx              # All routes
+│       │   └── ProtectedRoute.jsx     # Role-based route guard
+│       ├── layouts/                   # Patient/Vendor shell layouts
+│       └── pages/
+│           ├── auth/                  # RoleSelector, Login
+│           ├── patient/               # Home, Search, Detail, Reservation, Reservations
+│           ├── vendor/                # Dashboard, Inventory, Reservations
+│           └── NotFound.jsx           # 404 page
+│
+└── server/                            # Node.js + Express API
+    ├── .env.example
+    ├── package.json
+    ├── server.js                      # App entry point
+    ├── seed.js                        # Database seeder
+    ├── config/db.js                   # MongoDB connection
+    ├── controllers/                   # Auth, Medicine, Inventory, Reservation
+    ├── middleware/authMiddleware.js    # JWT protect + role guard
+    ├── models/                        # User, Pharmacy, Medicine, Inventory, Reservation
+    ├── routes/                        # Express Router mounts
+    └── utils/generateToken.js         # JWT helper
+```
+
+---
+
+## Database Schema
+
+```javascript
+User          { _id, name, phone, password, role: 'patient'|'vendor', otp }
+Pharmacy      { _id, vendorId, name, address, lat, lng, hours }
+Medicine      { _id, name, genericName, manufacturer, dosage, packSize }
+Inventory     { _id, pharmacyId, medicineId, mrp, sellingPrice, stockQty, isListed }
+Reservation   { _id, patientId, pharmacyId, medicineId, qty, status, reservationCode }
 ```
 
 ---

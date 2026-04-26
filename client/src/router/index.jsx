@@ -7,6 +7,7 @@ import PatientHome from '../pages/patient/Home';
 import SearchResults from '../pages/patient/SearchResults';
 import MedicineDetail from '../pages/patient/MedicineDetail';
 import Reservation from '../pages/patient/Reservation';
+import PatientReservations from '../pages/patient/Reservations';
 import VendorLayout from '../layouts/VendorLayout';
 import VendorDashboard from '../pages/vendor/Dashboard';
 import VendorInventory from '../pages/vendor/Inventory';
@@ -25,6 +26,7 @@ function AppRoutes() {
         <Route path="search" element={<SearchResults />} />
         <Route path="medicine/:id" element={<MedicineDetail />} />
         <Route path="reserve/:medicineId" element={<Reservation />} />
+        <Route path="reservations" element={<PatientReservations />} />
       </Route>
 
       {/* Vendor routes */}
@@ -32,7 +34,11 @@ function AppRoutes() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<VendorDashboard />} />
         <Route path="inventory" element={<VendorInventory />} />
+        <Route path="reservations" element={<VendorReservations />} />
       </Route>
+
+      {/* 404 catch-all */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
