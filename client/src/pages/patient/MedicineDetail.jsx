@@ -406,24 +406,24 @@ function MedicineDetail() {
 
                   return (
                     <tr
-                      key={p.id}
+                      key={p.inventoryId || p.id}
                       style={isBest ? s.bestRow : {}}
                     >
                       <td style={{ ...s.td, ...s.pharmacyCell }}>
-                        {p.pharmacyName}
+                        {p.pharmacy?.name || p.pharmacyName}
                         {isBest && <span style={s.bestBadge}>Best Price</span>}
                       </td>
-                      <td style={s.td}>📍 {p.distance}</td>
+                      <td style={s.td}>📍 {typeof p.distance === 'number' ? `${p.distance} km` : p.distance}</td>
                       <td style={{ ...s.td, ...s.priceCell }}>₹{p.sellingPrice}</td>
                       <td style={{ ...s.td, ...s.mrpCell }}>₹{p.mrp}</td>
                       <td style={{ ...s.td, ...s.saveCell }}>₹{savings}</td>
                       <td style={s.td}>
-                        <span style={p.stock ? s.stockIn : s.stockOut}>
-                          {p.stock ? '● In Stock' : '● Out of Stock'}
+                        <span style={(p.stockQty > 0 || p.stock) ? s.stockIn : s.stockOut}>
+                          {(p.stockQty > 0 || p.stock) ? '● In Stock' : '● Out of Stock'}
                         </span>
                       </td>
                       <td style={s.td}>
-                        {p.stock ? (
+                        {(p.stockQty > 0 || p.stock) ? (
                           <button
                             style={s.reserveBtn}
                             onMouseEnter={(e) =>
