@@ -42,7 +42,7 @@ function VendorReservations() {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.get(`/api/vendor/reservations?status=${status}`);
+      const { data } = await api.get(`/api/reservations/vendor?status=${status}`);
       setReservations(data.reservations || []);
     } catch (_) { setError('Something went wrong. Try again.'); setReservations([]); }
     finally { setLoading(false); }
@@ -52,7 +52,7 @@ function VendorReservations() {
 
   const handleAction = async (id, status) => {
     try {
-      await api.patch(`/api/vendor/reservations/${id}/status`, { status });
+      await api.patch(`/api/reservations/vendor/${id}/status`, { status });
       fetchReservations(activeTab);
     } catch (_) { setError('Failed to update status.'); }
   };

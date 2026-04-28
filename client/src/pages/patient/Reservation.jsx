@@ -1,21 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-
-/* ── Dummy data ── */
-const medicineData = {
-  name: 'Metformin 500mg',
-  dosage: '500mg',
-  packSize: 'Strip of 15 tablets',
-  mrp: 145,
-  sellingPrice: 85,
-};
-
-const pharmacyInfo = {
-  name: 'Wellness Forever',
-  address: '23, Salt Lake City, Sector V, Kolkata - 700091',
-  timing: '8:00 AM – 10:00 PM',
-  phone: '+91 98765 43210',
-};
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import api from '../../lib/api';
 
 /* ── Step labels ── */
 const steps = ['Select Medicine', 'Confirm Details', 'Done'];
@@ -339,13 +324,40 @@ const s = {
 function Reservation() {
   const { medicineId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(2);
   const [qty, setQty] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [reservationCode, setReservationCode] = useState('');
 
-  const unitPrice = medicineData.sellingPrice;
-  const totalMrp = medicineData.mrp * qty;
+  const pharmacyId = searchParams.get('pharmacyId');
+  const medicineName = searchParams.get('name') || 'Medicine';
+  const mrp = Number(searchParams.get('mrp')) || 0;
+  const price = Number(searchParams.get('price')) || 0;
+  const pharmacyName = searchParams.get('pharmacyName') || 'Pharmacy';
+
+  const unitPrice = price;
+  const totalMrp = mrp * qty;
   const totalPrice = unitPrice * qty;
   const totalDiscount = totalMrp - totalPrice;
+
+  const handleConfirm = async () => {
+    if (!pharmacyId || !medicineId) return;
+    setLoading(true);
+    try {
+      const res = await api.post('/api/reservations', {
+        pharmacyId,
+        medicineId,
+        qty,
+      });
+      setReservationCode(res.data.reservationCode);
+      setStep(3);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to create reservation');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* ── Render step indicator ── */
   const renderSteps = () => (
@@ -402,12 +414,12 @@ function Reservation() {
           <div style={s.card}>
             <div style={s.cardTitle}>📋 Order Summary</div>
 
-            <div style={s.medName}>{medicineData.name}</div>
+            <div style={s.medName}>{medicineName}</div>
             <div style={s.medMeta}>
-              {medicineData.dosage} · {medicineData.packSize}
+              Quantity to reserve
             </div>
-            <div style={s.pharmacyRow}>🏪 {pharmacyInfo.name}</div>
-            <div style={s.addressRow}>📍 {pharmacyInfo.address}</div>
+            <div style={s.pharmacyRow}>🏪 {pharmacyName}</div>
+            <div style={s.addressRow}>📍 Pending full address...</div>
 
             {/* Quantity stepper */}
             <div style={s.qtyLabel}>Quantity</div>
@@ -452,12 +464,13 @@ function Reservation() {
 
           {/* Confirm button */}
           <button
-            style={s.confirmBtn}
-            onClick={() => setStep(3)}
+            style={{ ...s.confirmBtn, opacity: loading ? 0.7 : 1 }}
+            disabled={loading}
+            onClick={handleConfirm}
             onMouseEnter={(e) => (e.currentTarget.style.background = '#178c65')}
             onMouseLeave={(e) => (e.currentTarget.style.background = '#1D9E75')}
           >
-            Confirm Reservation
+            {loading ? 'Confirming...' : 'Confirm Reservation'}
           </button>
         </div>
 
@@ -465,10 +478,10 @@ function Reservation() {
         <div style={s.rightCol}>
           <div style={s.card}>
             <div style={s.cardTitle}>🏪 Pharmacy Details</div>
-            <div style={s.phName}>{pharmacyInfo.name}</div>
-            <div style={s.phDetail}>📍 {pharmacyInfo.address}</div>
-            <div style={s.phDetail}>🕐 {pharmacyInfo.timing}</div>
-            <div style={s.phDetail}>📞 {pharmacyInfo.phone}</div>
+            <div style={s.phName}>{pharmacyName}</div>
+            <div style={s.phDetail}>📍 Address details loading...</div>
+            <div style={s.phDetail}>🕐 Check directly with store</div>
+            <div style={s.phDetail}>📞 Available after reserve</div>
 
             <button
               style={s.callBtn}
@@ -494,7 +507,7 @@ function Reservation() {
         </div>
 
         <div style={s.codeLabel}>Reservation Code</div>
-        <div style={s.codeValue}>MED-2024-00142</div>
+        <div style={s.codeValue}>{reservationCode || 'MED-XXXXXX'}</div>
 
         <div style={s.qrPlaceholder}>QR — Show at counter</div>
 

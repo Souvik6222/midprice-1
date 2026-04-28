@@ -1,28 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
-/* ── Hardcoded medicine results ── */
-const allResults = [
-  {
-    id: 1,
-    name: 'Metformin 500mg',
-    dosage: '500mg',
-    packSize: 'Strip of 15 tablets',
-    pharmacy: 'Apollo Pharmacy',
-    distance: '0.8 km',
-    mrp: 145,
-    price: 98,
-    inStock: true,
-    isGeneric: true,
-    openNow: true,
-    withinRange: true,
-  },
-  {
-    id: 2,
-    name: 'Metformin 500mg',
-    dosage: '500mg',
-    packSize: 'Strip of 15 tablets',
-    pharmacy: 'MedPlus',
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
     distance: '1.2 km',
     mrp: 145,
     price: 112,
@@ -297,11 +275,49 @@ const s = {
 
 function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const queryFromUrl = searchParams.get('q') || '';
 
   const [inputValue, setInputValue] = useState(queryFromUrl);
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('low-to-high');
+  const [allResults, setAllResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (queryFromUrl) {
+      setLoading(true);
+      api.get(`/api/medicines/search?q=${queryFromUrl}&lat=22.5726&lng=88.3639`)
+        .then((res) => {
+          const formatted = res.data.results.map((item, index) => ({
+            id: item.medicine.id, // For routing to MedicineDetail
+            inventoryId: item.inventoryId,
+            pharmacyId: item.pharmacy.id,
+            name: item.medicine.name,
+            dosage: item.medicine.dosage,
+            packSize: item.medicine.packSize,
+            pharmacy: item.pharmacy.name,
+            distance: `${item.distance} km`,
+            mrp: item.mrp,
+            price: item.sellingPrice,
+            inStock: item.stockQty > 0,
+            isGeneric: !!item.medicine.genericName,
+            openNow: true,
+            withinRange: item.distance <= 5,
+          }));
+          // Group by medicine ID to avoid duplicates if we want unique medicines
+          // Actually, let's keep all inventory results for the search page since they have pharmacy names.
+          setAllResults(formatted);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoading(false);
+        });
+    } else {
+      setAllResults([]);
+    }
+  }, [queryFromUrl]);
 
   /* ── Update URL on search ── */
   const handleSearch = (e) => {
@@ -412,7 +428,9 @@ function SearchResults() {
       </div>
 
       {/* ── Result cards ── */}
-      {processedResults.length === 0 ? (
+      {loading ? (
+        <div style={s.empty}>Loading medicines...</div>
+      ) : processedResults.length === 0 ? (
         <div style={s.empty}>
           No medicines match your current filters. Try adjusting your search.
         </div>
@@ -485,6 +503,7 @@ function SearchResults() {
               <div style={s.cardBottom}>
                 <button
                   style={s.btnOutline}
+                  onClick={() => navigate(`/patient/medicine/${med.id}`)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = '#f0fdf7';
                   }}
@@ -492,10 +511,11 @@ function SearchResults() {
                     e.currentTarget.style.background = '#fff';
                   }}
                 >
-                  📍 Get Directions
+                  ⚖️ Compare Prices
                 </button>
                 <button
                   style={s.btnFilled}
+                  onClick={() => navigate(`/patient/reservation/${med.id}?pharmacyId=${med.pharmacyId}&name=${encodeURIComponent(med.name)}&mrp=${med.mrp}&price=${med.price}&pharmacyName=${encodeURIComponent(med.pharmacy)}`)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = '#178c65';
                   }}

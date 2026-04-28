@@ -231,6 +231,11 @@ function RoleSelector() {
         >
           Continue →
         </button>
+        {!selectedRole && (
+          <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginTop: '0.5rem' }}>
+            👆 Select a role to proceed
+          </p>
+        )}
       </div>
     </div>
   );

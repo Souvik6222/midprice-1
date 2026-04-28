@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
 
 /* ── Hardcoded pharmacy data ── */
 const pharmacyData = [
@@ -315,11 +316,45 @@ const tabs = ['Price Comparison', 'About Medicine', 'Alternatives'];
 function MedicineDetail() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState('Price Comparison');
+  const [prices, setPrices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [medicineName, setMedicineName] = useState('');
+  const [genericName, setGenericName] = useState('');
+  const [manufacturer, setManufacturer] = useState('');
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const lat = 22.5726;
+        const lng = 88.3639;
+        const { data } = await api.get(`/api/medicines/${id}/prices?lat=${lat}&lng=${lng}`);
+        setPrices(data.results || []);
+
+        if (data.results && data.results.length > 0) {
+          const firstRes = data.results[0];
+          if (firstRes.medicine) {
+            setMedicineName(firstRes.medicine.name);
+            setGenericName(firstRes.medicine.genericName || '');
+            setManufacturer(firstRes.medicine.manufacturer || '');
+          }
+        }
+      } catch (_) {
+        setError('Something went wrong. Try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrices();
+  }, [id]);
 
   /* Sort pharmacies by selling price */
   const sorted = useMemo(
-    () => [...pharmacyData].sort((a, b) => a.sellingPrice - b.sellingPrice),
-    []
+    () => [...prices].sort((a, b) => a.sellingPrice - b.sellingPrice),
+    [prices]
   );
 
   const cheapest = sorted[0];
@@ -329,9 +364,9 @@ function MedicineDetail() {
       {/* ── Main Column ── */}
       <div style={s.mainCol}>
         {/* Medicine header */}
-        <div style={s.medTitle}>Metformin 500mg</div>
-        <div style={s.genericName}>Metformin Hydrochloride</div>
-        <div style={s.manufacturer}>Sun Pharmaceutical Industries Ltd.</div>
+        <div style={s.medTitle}>{medicineName || 'Medicine'}</div>
+        <div style={s.genericName}>{genericName}</div>
+        <div style={s.manufacturer}>{manufacturer}</div>
 
         {/* Tab bar */}
         <div style={s.tabBar}>
@@ -371,26 +406,27 @@ function MedicineDetail() {
 
                   return (
                     <tr
-                      key={p.id}
+                      key={p.inventoryId || p.id}
                       style={isBest ? s.bestRow : {}}
                     >
                       <td style={{ ...s.td, ...s.pharmacyCell }}>
-                        {p.pharmacyName}
+                        {p.pharmacy?.name || p.pharmacyName}
                         {isBest && <span style={s.bestBadge}>Best Price</span>}
                       </td>
-                      <td style={s.td}>📍 {p.distance}</td>
+                      <td style={s.td}>📍 {typeof p.distance === 'number' ? `${p.distance} km` : p.distance}</td>
                       <td style={{ ...s.td, ...s.priceCell }}>₹{p.sellingPrice}</td>
                       <td style={{ ...s.td, ...s.mrpCell }}>₹{p.mrp}</td>
                       <td style={{ ...s.td, ...s.saveCell }}>₹{savings}</td>
                       <td style={s.td}>
-                        <span style={p.stock ? s.stockIn : s.stockOut}>
-                          {p.stock ? '● In Stock' : '● Out of Stock'}
+                        <span style={(p.stockQty > 0 || p.stock) ? s.stockIn : s.stockOut}>
+                          {(p.stockQty > 0 || p.stock) ? '● In Stock' : '● Out of Stock'}
                         </span>
                       </td>
                       <td style={s.td}>
-                        {p.stock ? (
+                        {(p.stockQty > 0 || p.stock) ? (
                           <button
                             style={s.reserveBtn}
+                            onClick={() => navigate(`/patient/reservation/${id}?pharmacyId=${p.pharmacy?.id}&name=${encodeURIComponent(medicineName)}&mrp=${p.mrp}&price=${p.sellingPrice}&pharmacyName=${encodeURIComponent(p.pharmacy?.name)}`)}
                             onMouseEnter={(e) =>
                               (e.currentTarget.style.background = '#178c65')
                             }
@@ -428,30 +464,33 @@ function MedicineDetail() {
       </div>
 
       {/* ── Sticky Side Card ── */}
-      <div style={s.stickyCard}>
-        <div style={s.scLabel}>🏆 Best Deal</div>
-        <div style={s.scName}>{cheapest.pharmacyName}</div>
-        <div style={s.scAddress}>📍 {cheapest.address}</div>
-        <div style={s.scTiming}>🕐 {cheapest.timing}</div>
+      {cheapest && (
+        <div style={s.stickyCard}>
+          <div style={s.scLabel}>🏆 Best Deal</div>
+          <div style={s.scName}>{cheapest.pharmacy?.name}</div>
+          <div style={s.scAddress}>📍 {cheapest.pharmacy?.address}</div>
+          <div style={s.scTiming}>🕐 {cheapest.pharmacy?.hours}</div>
 
-        <div style={s.scDivider} />
+          <div style={s.scDivider} />
 
-        <div style={s.scPriceRow}>
-          <span style={s.scPrice}>₹{cheapest.sellingPrice}</span>
-          <span style={s.scMrp}>₹{cheapest.mrp}</span>
-        </div>
-        <div style={s.scSavings}>
-          Save ₹{cheapest.mrp - cheapest.sellingPrice}
-        </div>
+          <div style={s.scPriceRow}>
+            <span style={s.scPrice}>₹{cheapest.sellingPrice}</span>
+            <span style={s.scMrp}>₹{cheapest.mrp}</span>
+          </div>
+          <div style={s.scSavings}>
+            Save ₹{cheapest.mrp - cheapest.sellingPrice}
+          </div>
 
         <button
           style={s.scReserveBtn}
+          onClick={() => navigate(`/patient/reservation/${id}?pharmacyId=${cheapest.pharmacy?.id}&name=${encodeURIComponent(medicineName)}&mrp=${cheapest.mrp}&price=${cheapest.sellingPrice}&pharmacyName=${encodeURIComponent(cheapest.pharmacy?.name)}`)}
           onMouseEnter={(e) => (e.currentTarget.style.background = '#178c65')}
           onMouseLeave={(e) => (e.currentTarget.style.background = '#1D9E75')}
         >
           Reserve Now
         </button>
       </div>
+      )}
     </div>
   );
 }

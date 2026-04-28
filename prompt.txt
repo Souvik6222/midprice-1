@@ -1,0 +1,199 @@
+==============================================================================
+PROMPT TO FIX ALL ISSUES IN MEDPRICE (issu.txt)
+==============================================================================
+
+Fix the following bugs and missing features in my MedPrice project (MERN stack).
+The project structure is: client/ (React CRA) and server/ (Node + Express).
+
+----------------------------------------------------------------------
+ISSUE 1 — CRITICAL: Vendor Reservations API Route Mismatch
+----------------------------------------------------------------------
+
+ROOT CAUSE:
+- server.js mounts reservation routes at:  app.use('/api/reservations', reservationRoutes)
+- Inside reservationRoutes.js, the vendor endpoints are:
+    GET  /vendor         → maps to /api/reservations/vendor
+    PATCH /vendor/:id/status → maps to /api/reservations/vendor/:id/status
+- But the frontend (Dashboard.jsx, Reservations.jsx) calls:
+    GET  /api/vendor/reservations?status=pending
+    PATCH /api/vendor/reservations/:id/status
+
+This means the frontend hits a route that does NOT exist on the backend,
+causing 404s → "Something went wrong" errors on:
+  • Vendor Dashboard (error banner + 0 pending reservations)
+  • Vendor Reservations page (fails to load entirely)
+
+FIX (choose one approach):
+
+Option A — Fix the backend routes to match frontend expectations:
+  1. In server.js, add a NEW mount:
+       app.use('/api/vendor/reservations', require('./routes/vendorReservationRoutes'));
+  2. Create routes/vendorReservationRoutes.js with:
+       GET  /              → getVendorReservations
+       PATCH /:id/status   → updateReservationStatus
+  3. Remove the /vendor and /vendor/:id/status routes from reservationRoutes.js
+
+Option B — Fix the frontend to match existing backend routes:
+  1. In client/src/pages/vendor/Dashboard.jsx, change:
+       api.get('/api/vendor/reservations?status=pending')
+     to:
+       api.get('/api/reservations/vendor?status=pending')
+
+  2. Change api.patch('/api/vendor/reservations/...') to api.patch('/api/reservations/vendor/...')
+
+  3. Do the same in client/src/pages/vendor/Reservations.jsx:
+       api.get(`/api/vendor/reservations?status=${status}`)
+     → api.get(`/api/reservations/vendor?status=${status}`)
+
+       api.patch(`/api/vendor/reservations/${id}/status`, ...)
+     → api.patch(`/api/reservations/vendor/${id}/status`, ...)
+
+I recommend Option B (frontend fix) since it requires fewer file changes.
+
+----------------------------------------------------------------------
+ISSUE 2 — CRITICAL: Price Comparison Page Crashes
+----------------------------------------------------------------------
+
+ROOT CAUSE:
+In client/src/pages/patient/MedicineDetail.jsx (line 270-299), the useEffect
+fetches prices, then tries to find the medicine name by doing:
+    const match = searchRes.data.results?.find(r => r.medicine.id === id);
+The problem is `r.medicine.id` is a MongoDB ObjectId object but `id` (from
+useParams) is a string. ObjectId !== string comparison always fails, so
+`match` is undefined and medicine name/generic/manufacturer stay empty.
+
+Also, if the `/api/medicines/${id}/prices` call itself fails (e.g. invalid
+ObjectId format), the whole page crashes with "Something went wrong".
+
+FIX:
+1. In MedicineDetail.jsx, change the match line from:
+     r.medicine.id === id
+   to:
+     String(r.medicine.id) === String(id)
+
+2. Better approach: Instead of making a second search API call just to get
+   the medicine name, add medicine details to the /prices API response.
+   In server/controllers/medicineController.js → getMedicinePrices():
+   After the Inventory.find(), also populate('medicineId') and include
+   the medicine info in the response so the frontend doesn't need a
+   second request.
+
+----------------------------------------------------------------------
+ISSUE 3 — BUG: Patient Profile Page → 404
+----------------------------------------------------------------------
+
+ROOT CAUSE:
+- PatientLayout.jsx has a sidebar link: { to: '/patient/profile', label: 'Profile' }
+- But router/index.jsx has NO route for /patient/profile
+- Same issue for { to: '/patient/saved', label: 'Saved' }
+
+FIX:
+1. Create client/src/pages/patient/Profile.jsx — a simple page showing
+   user name, phone, and role from the auth store. Include a logout button.
+
+2. In router/index.jsx, add:
+     import Profile from '../pages/patient/Profile';
+     <Route path="profile" element={<Profile />} />
+
+3. Either create a Saved.jsx page or remove the "Saved" link from
+   PatientLayout.jsx sidebar if the feature is not planned yet.
+
+----------------------------------------------------------------------
+ISSUE 4 — BUG: Vendor Analytics & Settings → 404
+----------------------------------------------------------------------
+
+ROOT CAUSE:
+- VendorLayout.jsx has sidebar links for /vendor/analytics and /vendor/settings
+- But router/index.jsx has NO routes for them
+
+FIX:
+1. Create client/src/pages/vendor/Analytics.jsx — even a simple placeholder
+   page with "Analytics — Coming Soon" is better than a 404.
+
+2. Create client/src/pages/vendor/Settings.jsx — same approach. Include
+   basic pharmacy profile info and a logout button.
+
+3. In router/index.jsx, add:
+     import Analytics from '../pages/vendor/Analytics';
+     import Settings from '../pages/vendor/Settings';
+     <Route path="analytics" element={<Analytics />} />
+     <Route path="settings" element={<Settings />} />
+
+----------------------------------------------------------------------
+ISSUE 5 — UX: No Logout Button
+----------------------------------------------------------------------
+
+ROOT CAUSE:
+- Both PatientLayout.jsx and VendorLayout.jsx render a static avatar div
+  (<div className="header-avatar">U</div>) with NO click handler.
+- The authStore has a logout() method, but nothing in the UI triggers it.
+
+FIX:
+1. In PatientLayout.jsx, make the avatar clickable. On click, show a small
+   dropdown with "Profile" and "Logout" options.
+   Import useAuthStore and useNavigate:
+     const logout = useAuthStore(state => state.logout);
+     const navigate = useNavigate();
+   On "Logout" click:
+     logout();
+     navigate('/auth/select-role');
+
+2. Do the same in VendorLayout.jsx.
+
+3. Alternatively, add a "Logout" link at the bottom of the sidebar in both
+   layouts (simpler approach).
+
+----------------------------------------------------------------------
+ISSUE 6 — UX: Add Medicine Modal Requires Raw ObjectId
+----------------------------------------------------------------------
+
+ROOT CAUSE:
+- In Inventory.jsx (line 156), the "Add New Medicine" modal has:
+    <input placeholder="Paste medicine ObjectId" ...>
+- Vendors are expected to know and paste a MongoDB ObjectId, which is
+  completely unusable in production.
+
+FIX:
+1. Create a new backend endpoint:
+     GET /api/medicines/list (or /api/medicines?q=)
+   that returns all medicines in the database (id, name, dosage, manufacturer).
+
+2. In the Add Medicine modal, replace the raw ObjectId input with a
+   searchable dropdown (or a text input with autocomplete):
+   - On typing, call the above endpoint filtered by the input text.
+   - Show medicine names + dosage in the dropdown.
+   - On selection, store the medicine._id internally.
+
+   Example with a simple approach:
+   - Add a state: [medicineOptions, setMedicineOptions]
+   - Add a state: [medSearch, setMedSearch]
+   - useEffect that fetches medicines when medSearch changes (debounced)
+   - Render a filtered list below the input
+   - On click, set newMed.medicineId to the selected medicine's _id
+
+----------------------------------------------------------------------
+ISSUE 7 — UX: Role Selection Clarity
+----------------------------------------------------------------------
+
+The "Continue" button on the role selection page is visually disabled
+when no role is selected, but there is no helper text explaining why.
+
+FIX:
+In client/src/pages/auth/RoleSelector.jsx, add a small text below the
+Continue button (or as a tooltip) when no role is selected:
+   {!selectedRole && (
+     <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginTop: '0.5rem' }}>
+       👆 Select a role to proceed
+     </p>
+   )}
+
+==============================================================================
+PRIORITY ORDER
+==============================================================================
+1. Issue 1 (Vendor Reservations route mismatch) — CRITICAL, blocks vendor flow
+2. Issue 2 (Price Comparison crash) — CRITICAL, blocks patient core feature
+3. Issue 5 (Logout button) — HIGH, users can't sign out
+4. Issue 3 (Profile 404) — MEDIUM, dead link in sidebar
+5. Issue 4 (Analytics/Settings 404) — MEDIUM, dead links in sidebar
+6. Issue 6 (Add Medicine UX) — MEDIUM, usability problem
+7. Issue 7 (Role Selection hint) — LOW, minor polish

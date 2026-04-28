@@ -39,7 +39,7 @@ function VendorDashboard() {
 
   const fetchReservations = async () => {
     try {
-      const { data } = await api.get('/api/vendor/reservations?status=pending');
+      const { data } = await api.get('/api/reservations/vendor?status=pending');
       setReservations(data.reservations || []);
       setError('');
     } catch (_) { setError('Something went wrong. Try again.'); }
@@ -57,14 +57,14 @@ function VendorDashboard() {
 
   const handleMarkReady = async (id) => {
     try {
-      await api.patch(`/api/vendor/reservations/${id}/status`, { status: 'ready' });
+      await api.patch(`/api/reservations/vendor/${id}/status`, { status: 'ready' });
       fetchReservations();
     } catch (_) { setError('Failed to update status.'); }
   };
 
   const handleCancel = async (id) => {
     try {
-      await api.patch(`/api/vendor/reservations/${id}/status`, { status: 'cancelled' });
+      await api.patch(`/api/reservations/vendor/${id}/status`, { status: 'cancelled' });
       fetchReservations();
     } catch (_) { setError('Failed to cancel reservation.'); }
   };

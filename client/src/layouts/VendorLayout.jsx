@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
 import './VendorLayout.css';
 
 const sidebarLinks = [
@@ -11,6 +12,14 @@ const sidebarLinks = [
 ];
 
 function VendorLayout() {
+  const logout = useAuthStore(state => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/auth/select-role');
+  };
+
   return (
     <div className="vendor-layout">
       {/* Sidebar */}
@@ -52,7 +61,7 @@ function VendorLayout() {
               placeholder="Search inventory, orders..."
             />
           </div>
-          <div className="vendor-header-avatar">P</div>
+          <div className="vendor-header-avatar" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Logout">P</div>
         </header>
 
         {/* Page Content */}

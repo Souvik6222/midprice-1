@@ -55,6 +55,8 @@ function Inventory() {
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [newMed, setNewMed] = useState({ medicineId: '', mrp: '', sellingPrice: '', stockQty: '' });
+  const [medicinesList, setMedicinesList] = useState([]);
+  const [medSearch, setMedSearch] = useState('');
 
   const fetchInventory = async () => {
     try {
@@ -69,6 +71,16 @@ function Inventory() {
   };
 
   useEffect(() => { fetchInventory(); }, []);
+
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const { data } = await api.get(`/api/medicines/list?q=${medSearch}`);
+        setMedicinesList(data.medicines || []);
+      } catch (err) { }
+    };
+    if (showModal) fetchMedicines();
+  }, [medSearch, showModal]);
 
   const filtered = useMemo(() =>
     inventory.filter((item) => (item.medicineId?.name || '').toLowerCase().includes(search.toLowerCase())),
@@ -97,6 +109,7 @@ function Inventory() {
     try {
       await api.post('/api/vendor/inventory', { medicineId: newMed.medicineId, mrp: Number(newMed.mrp) || 0, sellingPrice: Number(newMed.sellingPrice) || 0, stockQty: Number(newMed.stockQty) || 0 });
       setNewMed({ medicineId: '', mrp: '', sellingPrice: '', stockQty: '' });
+      setMedSearch('');
       setShowModal(false); fetchInventory();
     } catch (err) { setError(err.response?.data?.message || 'Add failed'); }
     finally { setSaving(false); }
@@ -153,7 +166,20 @@ function Inventory() {
           <div style={s.modal} onClick={(e) => e.stopPropagation()}>
             <div style={s.modalTitle}>Add New Medicine</div>
             <div style={s.formGrid}>
-              <div style={s.formGroupFull}><label style={s.formLabel}>Medicine ID</label><input style={s.formInput} placeholder="Paste medicine ObjectId" value={newMed.medicineId} onChange={(e) => updateNew('medicineId', e.target.value)} /></div>
+              <div style={s.formGroupFull}>
+                <label style={s.formLabel}>Medicine</label>
+                <input style={s.formInput} placeholder="Search medicine..." value={medSearch} onChange={(e) => { setMedSearch(e.target.value); updateNew('medicineId', ''); }} />
+                {medSearch && !newMed.medicineId && (
+                  <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '8px', marginTop: '0.5rem', background: '#fff' }}>
+                    {medicinesList.map(m => (
+                      <div key={m._id} style={{ padding: '0.5rem', cursor: 'pointer', borderBottom: '1px solid #f3f4f6', fontSize: '0.85rem' }} onClick={() => { updateNew('medicineId', m._id); setMedSearch(`${m.name} (${m.dosage})`); }}>
+                        <span style={{ fontWeight: 600 }}>{m.name}</span> ({m.dosage}) <span style={{ color: '#9ca3af' }}>— {m.manufacturer}</span>
+                      </div>
+                    ))}
+                    {medicinesList.length === 0 && <div style={{ padding: '0.5rem', color: '#9ca3af', fontSize: '0.85rem' }}>No medicines found</div>}
+                  </div>
+                )}
+              </div>
               <div style={s.formGroup}><label style={s.formLabel}>MRP (₹)</label><input style={s.formInput} type="number" placeholder="150" value={newMed.mrp} onChange={(e) => updateNew('mrp', e.target.value)} /></div>
               <div style={s.formGroup}><label style={s.formLabel}>Your Price (₹)</label><input style={s.formInput} type="number" placeholder="95" value={newMed.sellingPrice} onChange={(e) => updateNew('sellingPrice', e.target.value)} />{newSavings > 0 && <div style={s.savingsHint}>Saving customers ₹{newSavings}</div>}</div>
               <div style={s.formGroupFull}><label style={s.formLabel}>Stock Quantity</label><input style={s.formInput} type="number" placeholder="100" value={newMed.stockQty} onChange={(e) => updateNew('stockQty', e.target.value)} /></div>

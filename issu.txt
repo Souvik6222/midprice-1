@@ -1,0 +1,22 @@
+# MedPrice Product Audit Report
+
+After testing the full MedPrice product (Patient and Vendor flows) in the browser, here is a brief report on the missing features, UX improvements, and critical bugs currently present in the project:
+
+## 1. Authentication & Onboarding
+*   **Role Selection UX**: The "Continue" button is visually disabled initially, but adding a tooltip or explicit text like "Select a role to proceed" would improve clarity.
+*   **Login Flow**: Works well. The OTP input fields auto-focus on sequential digit entry, which is a great UX touch.
+
+## 2. Patient Features
+*   **Price Comparison (CRITICAL BUG)**: Clicking the "Compare Prices" button on a search result leads to a "Something went wrong" error page. The "Retry" button also fails.
+*   **Profile Page (BUG)**: The "Profile" sidebar link leads to a **404 Page Not Found**.
+*   **Logout (UX ISSUE)**: There is no easily discoverable logout button. Clicking the user avatar does not trigger a dropdown or navigation.
+
+## 3. Vendor Features (Pharmacy Portal)
+*   **Dashboard Error (BUG)**: A "Something went wrong" error banner persists at the top of the vendor dashboard.
+*   **Reservation Sync (BUG)**: The "Pending Reservations" count on the dashboard showed 0, even after creating a pending reservation as a patient for that specific pharmacy.
+*   **Add Medicine Modal (BAD UX)**: The "Add New Medicine" modal requires the vendor to manually paste a "Medicine ID (ObjectId)". This needs to be a searchable dropdown or name-based search for real-world usability.
+*   **Reservations Page (CRITICAL BUG)**: The dedicated Reservations page for vendors fails to load patient orders, showing a "Something went wrong" error and incorrectly displaying an empty state.
+*   **Missing Pages (BUG)**: Both the "Analytics" and "Settings" sidebar links lead to **404 Page Not Found**.
+
+## Summary
+The core functionalities (auth, basic search, inventory display) are partially working. However, the connection between patient reservations and the vendor portal seems broken (causing the 404s and "Something went wrong" banners). Additionally, several navigation links are currently dead ends.

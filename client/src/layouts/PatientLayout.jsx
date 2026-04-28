@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
 import './PatientLayout.css';
 
 const sidebarLinks = [
@@ -11,6 +12,14 @@ const sidebarLinks = [
 ];
 
 function PatientLayout() {
+  const logout = useAuthStore(state => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/auth/select-role');
+  };
+
   return (
     <div className="patient-layout">
       {/* Sidebar */}
@@ -52,7 +61,7 @@ function PatientLayout() {
               placeholder="Search medicines, pharmacies..."
             />
           </div>
-          <div className="header-avatar">U</div>
+          <div className="header-avatar" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Logout">U</div>
         </header>
 
         {/* Page Content */}

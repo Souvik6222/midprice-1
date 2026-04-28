@@ -93,7 +93,7 @@ const getMedicinePrices = async (req, res) => {
     const inventoryItems = await Inventory.find({
       medicineId: id,
       isListed: true,
-    }).populate('pharmacyId');
+    }).populate('pharmacyId').populate('medicineId');
 
     const results = inventoryItems
       .map((item) => {
@@ -105,6 +105,15 @@ const getMedicinePrices = async (req, res) => {
 
         return {
           inventoryId: item._id,
+          medicine: item.medicineId ? {
+            id: item.medicineId._id,
+            name: item.medicineId.name,
+            genericName: item.medicineId.genericName,
+            salt: item.medicineId.salt,
+            manufacturer: item.medicineId.manufacturer,
+            dosage: item.medicineId.dosage,
+            packSize: item.medicineId.packSize,
+          } : null,
           pharmacy: {
             id: pharmacy._id,
             name: pharmacy.name,
@@ -125,4 +134,14 @@ const getMedicinePrices = async (req, res) => {
   }
 };
 
-module.exports = { searchMedicines, getMedicinePrices };
+const getAllMedicines = async (req, res) => {
+  try {
+    const query = req.query.q ? { name: new RegExp(req.query.q, 'i') } : {};
+    const medicines = await Medicine.find(query).limit(100);
+    res.status(200).json({ medicines });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { searchMedicines, getMedicinePrices, getAllMedicines };
