@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useAuthStore from '../../store/authStore';
+import api from '../../lib/api';
 
 const styles = {
   container: {
@@ -204,10 +206,11 @@ function Login() {
   const navigate = useNavigate();
   const role = location.state?.role || 'patient';
 
-  const [phone, setPhone] = useState('9733064817');
+  const [phone, setPhone] = useState(role === 'patient' ? '9876543210' : '9876543211');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const otpRefs = useRef([]);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleSendOtp = () => {
     if (phone.length >= 10) {
@@ -234,16 +237,19 @@ function Login() {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const otpValue = otp.join('');
-    console.log('Verifying OTP:', otpValue, 'for role:', role);
-    
-    // Redirect to the appropriate dashboard based on role
-    if (role === 'patient') {
-      navigate('/patient/home');
-    } else {
-      // Fallback for pharmacy/vendor if those aren't fully built yet
-      navigate('/patient/home');
+    try {
+      const { data } = await api.post('/api/auth/login', { phone, otp: otpValue });
+      setUser(data.user, data.token);
+
+      if (data.user.role === 'vendor' || data.user.role === 'pharmacy') {
+        navigate('/vendor/dashboard');
+      } else {
+        navigate('/patient/home');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Login failed');
     }
   };
 

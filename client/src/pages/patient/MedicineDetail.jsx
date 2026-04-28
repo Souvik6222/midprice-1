@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import api from '../../lib/api';
 
 /* ── Hardcoded pharmacy data ── */
 const pharmacyData = [

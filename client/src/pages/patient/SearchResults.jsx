@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 /* ── Hardcoded medicine results ── */
 const allResults = [
@@ -297,6 +297,7 @@ const s = {
 
 function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const queryFromUrl = searchParams.get('q') || '';
 
   const [inputValue, setInputValue] = useState(queryFromUrl);
@@ -485,6 +486,7 @@ function SearchResults() {
               <div style={s.cardBottom}>
                 <button
                   style={s.btnOutline}
+                  onClick={() => navigate(`/patient/medicine/${med.id}`)}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = '#f0fdf7';
                   }}
@@ -492,7 +494,7 @@ function SearchResults() {
                     e.currentTarget.style.background = '#fff';
                   }}
                 >
-                  📍 Get Directions
+                  ⚖️ Compare Prices
                 </button>
                 <button
                   style={s.btnFilled}
