@@ -56,13 +56,6 @@ function PatientLayout() {
         {/* Top Header */}
         <header className="patient-header">
           <div className="header-title">Dashboard</div>
-          <div className="header-search">
-            <input
-              className="header-search-input"
-              type="text"
-              placeholder="Search medicines, pharmacies..."
-            />
-          </div>
           <div className="header-avatar" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Logout">U</div>
         </header>
 

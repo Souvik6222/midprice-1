@@ -56,13 +56,6 @@ function VendorLayout() {
         {/* Top Header */}
         <header className="vendor-header">
           <div className="vendor-header-title">Pharmacy Dashboard</div>
-          <div className="vendor-header-search">
-            <input
-              className="vendor-header-search-input"
-              type="text"
-              placeholder="Search inventory, orders..."
-            />
-          </div>
           <div className="vendor-header-avatar" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Logout">P</div>
         </header>
 
