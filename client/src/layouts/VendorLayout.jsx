@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
-import { LayoutDashboard, Package, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, Settings, LogOut, ShieldCheck } from 'lucide-react';
+import VendorVerification from '../pages/vendor/Verification';
 
 const links = [
   { to: '/vendor/dashboard', icon: <LayoutDashboard size={17} />, label: 'Dashboard' },
@@ -16,6 +17,8 @@ function VendorLayout() {
 
   const handleLogout = () => { logout(); navigate('/auth/select-role'); };
 
+  const isVerified = user?.isVerified === true;
+
   return (
     <div style={s.shell}>
       {/* Sidebar */}
@@ -27,13 +30,34 @@ function VendorLayout() {
         </div>
 
         <nav style={s.nav}>
-          {links.map(l => (
-            <NavLink key={l.to} to={l.to} style={({ isActive }) => ({ ...s.link, ...(isActive ? s.linkActive : {}) })}>
-              <span style={s.linkIcon}>{l.icon}</span>
-              {l.label}
-            </NavLink>
-          ))}
+          {isVerified ? (
+            links.map(l => (
+              <NavLink key={l.to} to={l.to} style={({ isActive }) => ({ ...s.link, ...(isActive ? s.linkActive : {}) })}>
+                <span style={s.linkIcon}>{l.icon}</span>
+                {l.label}
+              </NavLink>
+            ))
+          ) : (
+            <div style={s.link}>
+              <span style={s.linkIcon}><ShieldCheck size={17} /></span>
+              Verification
+            </div>
+          )}
         </nav>
+
+        {/* Verification badge */}
+        {!isVerified && (
+          <div style={s.verifyBadge}>
+            <ShieldCheck size={14} color="#f59e0b" />
+            <span>Not Verified</span>
+          </div>
+        )}
+        {isVerified && (
+          <div style={s.verifiedBadge}>
+            <ShieldCheck size={14} color="#1D9E75" />
+            <span>Verified</span>
+          </div>
+        )}
 
         <div style={s.sideFooter}>
           <div style={s.userInfo}>
@@ -47,9 +71,9 @@ function VendorLayout() {
         </div>
       </aside>
 
-      {/* Content */}
+      {/* Content — show verification gate if not verified */}
       <main style={s.content}>
-        <Outlet />
+        {isVerified ? <Outlet /> : <VendorVerification />}
       </main>
     </div>
   );
@@ -72,6 +96,18 @@ const s = {
   link: { display: 'flex', alignItems: 'center', gap: '8px', padding: '0.6rem 0.8rem', borderRadius: '10px', textDecoration: 'none', color: '#6b7280', fontSize: '0.875rem', fontWeight: 500, transition: 'all 0.15s' },
   linkActive: { background: '#f0fdf7', color: '#1D9E75', fontWeight: 600 },
   linkIcon: { flexShrink: 0, display: 'flex' },
+
+  verifyBadge: {
+    display: 'flex', alignItems: 'center', gap: '6px', margin: '0 0.6rem 0.5rem',
+    padding: '0.5rem 0.8rem', borderRadius: '8px', background: '#fffbeb',
+    border: '1px solid #fde68a', fontSize: '0.72rem', fontWeight: 700, color: '#92400e',
+  },
+  verifiedBadge: {
+    display: 'flex', alignItems: 'center', gap: '6px', margin: '0 0.6rem 0.5rem',
+    padding: '0.5rem 0.8rem', borderRadius: '8px', background: '#f0fdf7',
+    border: '1px solid #bbf7d0', fontSize: '0.72rem', fontWeight: 700, color: '#166534',
+  },
+
   sideFooter: { padding: '1rem', borderTop: '1px solid #f3f4f6' },
   userInfo: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' },
   userAvatar: { width: '30px', height: '30px', borderRadius: '8px', background: '#1D9E75', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700 },

@@ -1,11 +1,13 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const medicineRoutes = require('./routes/medicineRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const pharmacyRoutes = require('./routes/pharmacyRoutes');
+const verificationRoutes = require('./routes/verificationRoutes');
 
 dotenv.config();
 
@@ -18,6 +20,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve uploaded files (license images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Health check route
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
@@ -28,6 +33,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/vendor/inventory', inventoryRoutes);
 app.use('/api/vendor/pharmacy', pharmacyRoutes);
+app.use('/api/vendor/verification', verificationRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

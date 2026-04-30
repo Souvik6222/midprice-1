@@ -34,11 +34,23 @@ const searchMedicines = async (req, res) => {
       .populate('medicineId')
       .populate('pharmacyId');
 
-    // Filter by medicine name (case-insensitive regex)
-    const regex = new RegExp(q, 'i');
-    let results = inventoryItems.filter(
-      (item) => item.medicineId && regex.test(item.medicineId.name)
-    );
+    // Robust Search: Normalize query (remove spaces, special chars)
+    const normalizedQ = q.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const keywords = q.toLowerCase().split(/\s+/).filter(k => k.length > 0);
+
+    let results = inventoryItems.filter((item) => {
+      if (!item.medicineId) return false;
+      const medName = item.medicineId.name.toLowerCase();
+      const normalizedMed = medName.replace(/[^a-z0-9]/g, '');
+
+      // 1. Direct match or normalized match (ignores spaces like "parasita moll" vs "parasitamoll")
+      if (normalizedMed.includes(normalizedQ)) return true;
+
+      // 2. Keyword match (any keyword exists in name)
+      if (keywords.length > 0 && keywords.some(k => medName.includes(k))) return true;
+
+      return false;
+    });
 
     // Calculate distance and filter within 5km
     results = results

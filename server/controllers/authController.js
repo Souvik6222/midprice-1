@@ -14,8 +14,14 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create new user
-    const user = await User.create({ phone, name, role });
+    // Create new user — patients are auto-verified, vendors need approval
+    const user = await User.create({
+      phone,
+      name,
+      role,
+      isVerified: role === 'patient', // patients are always verified
+      verificationStatus: role === 'vendor' ? 'none' : 'approved',
+    });
 
     res.status(201).json({
       token: generateToken(user._id, user.role),
@@ -24,6 +30,9 @@ const registerUser = async (req, res) => {
         name: user.name,
         phone: user.phone,
         role: user.role,
+        isVerified: user.isVerified,
+        verificationStatus: user.verificationStatus,
+        licenseUrl: user.licenseUrl,
       },
     });
   } catch (error) {
@@ -56,6 +65,9 @@ const loginUser = async (req, res) => {
         name: user.name,
         phone: user.phone,
         role: user.role,
+        isVerified: user.isVerified,
+        verificationStatus: user.verificationStatus,
+        licenseUrl: user.licenseUrl,
       },
     });
   } catch (error) {

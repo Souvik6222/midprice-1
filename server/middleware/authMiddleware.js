@@ -35,4 +35,15 @@ const requireRole = (role) => {
   };
 };
 
-module.exports = { protect, requireRole };
+// Block unverified vendors from accessing protected routes
+const requireVerified = (req, res, next) => {
+  if (req.user && req.user.role === 'vendor' && !req.user.isVerified) {
+    return res.status(403).json({
+      message: 'Your account is pending verification. Please upload your Drug License and wait for admin approval.',
+      verificationStatus: req.user.verificationStatus,
+    });
+  }
+  next();
+};
+
+module.exports = { protect, requireRole, requireVerified };

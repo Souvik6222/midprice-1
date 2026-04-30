@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, requireRole } = require('../middleware/authMiddleware');
+const { protect, requireRole, requireVerified } = require('../middleware/authMiddleware');
 const {
   getInventory,
   addInventory,
@@ -8,8 +8,8 @@ const {
   deleteInventory,
 } = require('../controllers/inventoryController');
 
-// All routes require: logged in + vendor role
-router.use(protect, requireRole('vendor'));
+// All routes require: logged in + vendor role + verified
+router.use(protect, requireRole('vendor'), requireVerified);
 
 // GET    /api/vendor/inventory       → list vendor's inventory
 router.get('/', getInventory);
