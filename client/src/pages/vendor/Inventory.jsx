@@ -78,31 +78,33 @@ export default function VendorInventory() {
   };
 
   return (
-    <div>
+    <div className="vi-container">
+      <style>{responsiveCSS}</style>
+
       {/* Header */}
-      <div style={s.pageHeader}>
+      <div className="vi-page-header">
         <div>
-          <h1 style={s.title}>My Medicines</h1>
-          <p style={s.sub}>{items.length} medicine{items.length !== 1 ? 's' : ''} in your inventory</p>
+          <h1 className="vi-title">My Medicines</h1>
+          <p className="vi-sub">{items.length} medicine{items.length !== 1 ? 's' : ''} in your inventory</p>
         </div>
-        <button style={s.addBtn} onClick={() => { setShowAdd(!showAdd); setAddError(''); }}>
+        <button className="vi-add-btn" onClick={() => { setShowAdd(!showAdd); setAddError(''); }}>
           <Plus size={16} /> Add Medicine
         </button>
       </div>
 
       {/* Add Form */}
       {showAdd && (
-        <form onSubmit={handleAdd} style={s.addForm}>
-          <div style={s.addFormTitle}>Add New Medicine</div>
-          <div style={s.formGrid}>
+        <form onSubmit={handleAdd} className="vi-add-form">
+          <div className="vi-add-form-title">Add New Medicine</div>
+          <div className="vi-form-grid">
             <input
-              style={s.input}
+              className="vi-input"
               placeholder="Medicine name (e.g. Paracetamol 500mg)"
               value={form.medicineName}
               onChange={e => setForm(p => ({ ...p, medicineName: e.target.value }))}
             />
             <input
-              style={s.input}
+              className="vi-input"
               type="number"
               placeholder="Price (₹)"
               value={form.price}
@@ -110,7 +112,7 @@ export default function VendorInventory() {
               min="0"
             />
             <input
-              style={s.input}
+              className="vi-input"
               type="number"
               placeholder="Stock qty"
               value={form.stockQty}
@@ -118,49 +120,51 @@ export default function VendorInventory() {
               min="0"
             />
           </div>
-          {addError && <div style={s.errMsg}>{addError}</div>}
-          <div style={s.formActions}>
-            <button type="submit" style={s.saveBtn} disabled={adding}>{adding ? 'Adding...' : 'Add Medicine'}</button>
-            <button type="button" style={s.cancelBtn} onClick={() => { setShowAdd(false); setAddError(''); }}>Cancel</button>
+          {addError && <div className="vi-err-msg">{addError}</div>}
+          <div className="vi-form-actions">
+            <button type="submit" className="vi-save-btn" disabled={adding}>{adding ? 'Adding...' : 'Add Medicine'}</button>
+            <button type="button" className="vi-cancel-btn" onClick={() => { setShowAdd(false); setAddError(''); }}>Cancel</button>
           </div>
         </form>
       )}
 
       {/* List */}
       {loading ? (
-        <div style={s.center}><div style={s.spinner} /></div>
+        <div className="vi-center"><div className="vi-spinner" /></div>
       ) : error ? (
-        <div style={s.errBanner}>{error} <button style={s.retryLink} onClick={load}>Retry</button></div>
+        <div className="vi-err-banner">{error} <button className="vi-retry-link" onClick={load}>Retry</button></div>
       ) : items.length === 0 ? (
-        <div style={s.empty}>
+        <div className="vi-empty">
           <Package size={40} color="#d1d5db" />
           <div>No medicines added yet.</div>
           <div style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Click "Add Medicine" to get started.</div>
         </div>
       ) : (
-        <div style={s.list}>
+        <div className="vi-list">
           {items.map(item => (
-            <div key={item._id} style={{ ...s.row, ...(item.stockQty === 0 ? s.rowOos : {}) }}>
-              <div style={s.rowLeft}>
-                <div style={{ ...s.dot, background: item.stockQty > 5 ? '#22c55e' : item.stockQty > 0 ? '#f59e0b' : '#ef4444' }} />
-                <div>
-                  <div style={s.medName}>{item.medicineId?.name}</div>
-                  <div style={s.medQty}>Stock: {item.stockQty} {item.stockQty === 0 && <span style={s.oosBadge}>Out of Stock</span>}</div>
+            <div key={item._id} className={`vi-row ${item.stockQty === 0 ? 'vi-row-oos' : ''}`}>
+              <div className="vi-row-left">
+                <div className="vi-dot" style={{ background: item.stockQty > 5 ? '#22c55e' : item.stockQty > 0 ? '#f59e0b' : '#ef4444' }} />
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div className="vi-med-name">{item.medicineId?.name}</div>
+                  <div className="vi-med-qty">Stock: {item.stockQty} {item.stockQty === 0 && <span className="vi-oos-badge">Out of Stock</span>}</div>
                 </div>
               </div>
 
               {editId === item._id ? (
-                <div style={s.editRow}>
-                  <input style={s.miniInput} type="number" value={editData.price} onChange={e => setEditData(p => ({ ...p, price: e.target.value }))} placeholder="Price" />
-                  <input style={s.miniInput} type="number" value={editData.stockQty} onChange={e => setEditData(p => ({ ...p, stockQty: e.target.value }))} placeholder="Qty" />
-                  <button style={s.iconBtn('#1D9E75')} onClick={saveEdit}><Check size={15} /></button>
-                  <button style={s.iconBtn('#6b7280')} onClick={() => setEditId(null)}><X size={15} /></button>
+                <div className="vi-edit-row">
+                  <input className="vi-mini-input" type="number" value={editData.price} onChange={e => setEditData(p => ({ ...p, price: e.target.value }))} placeholder="Price" />
+                  <input className="vi-mini-input" type="number" value={editData.stockQty} onChange={e => setEditData(p => ({ ...p, stockQty: e.target.value }))} placeholder="Qty" />
+                  <button className="vi-icon-btn vi-btn-success" onClick={saveEdit}><Check size={15} /></button>
+                  <button className="vi-icon-btn vi-btn-gray" onClick={() => setEditId(null)}><X size={15} /></button>
                 </div>
               ) : (
-                <div style={s.rowRight}>
-                  <div style={s.price}>₹{item.sellingPrice}</div>
-                  <button style={s.iconBtn('#3b82f6')} title="Edit" onClick={() => startEdit(item)}><Edit2 size={15} /></button>
-                  <button style={s.iconBtn('#ef4444')} title="Delete" onClick={() => handleDelete(item._id)}><Trash2 size={15} /></button>
+                <div className="vi-row-right">
+                  <div className="vi-price">₹{item.sellingPrice}</div>
+                  <div className="vi-actions">
+                    <button className="vi-icon-btn vi-btn-blue" title="Edit" onClick={() => startEdit(item)}><Edit2 size={15} /></button>
+                    <button className="vi-icon-btn vi-btn-red" title="Delete" onClick={() => handleDelete(item._id)}><Trash2 size={15} /></button>
+                  </div>
                 </div>
               )}
             </div>
@@ -171,45 +175,64 @@ export default function VendorInventory() {
   );
 }
 
-const iconBtn = (color) => ({
-  width: '30px', height: '30px', borderRadius: '8px', border: 'none',
-  background: `${color}15`, color, cursor: 'pointer', display: 'flex',
-  alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-});
+const responsiveCSS = `
+  .vi-container { width: 100%; }
+  .vi-center { display: flex; align-items: center; justify-content: center; height: 200px; }
+  .vi-spinner { width: 26px; height: 26px; border: 3px solid #e5e7eb; border-top: 3px solid #1D9E75; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  
+  .vi-page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap; }
+  .vi-title { font-size: 1.5rem; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.3px; }
+  .vi-sub { font-size: 0.82rem; color: #9ca3af; margin: 2px 0 0; }
+  .vi-add-btn { display: flex; align-items: center; gap: 6px; padding: 0.6rem 1.1rem; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 0.875rem; cursor: pointer; white-space: nowrap; }
 
-const s = {
-  center: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px' },
-  spinner: { width: '26px', height: '26px', border: '3px solid #e5e7eb', borderTop: '3px solid #1D9E75', borderRadius: '50%', animation: 'spin 0.8s linear infinite' },
-  pageHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' },
-  title: { fontSize: '1.5rem', fontWeight: 800, color: '#111827', margin: 0, letterSpacing: '-0.3px' },
-  sub: { fontSize: '0.82rem', color: '#9ca3af', margin: '2px 0 0' },
-  addBtn: { display: 'flex', alignItems: 'center', gap: '6px', padding: '0.6rem 1.1rem', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' },
+  .vi-add-form { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  .vi-add-form-title { font-weight: 700; font-size: 0.95rem; color: #111827; margin-bottom: 0.85rem; }
+  .vi-form-grid { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .vi-input { flex: 1 1 160px; padding: 0.6rem 0.85rem; border: 1.5px solid #e5e7eb; border-radius: 9px; font-size: 0.875rem; outline: none; font-family: inherit; color: #111827; transition: border-color 0.15s; }
+  .vi-input:focus { border-color: #1D9E75; }
+  .vi-err-msg { margin-top: 0.5rem; color: #ef4444; font-size: 0.82rem; font-weight: 500; }
+  .vi-form-actions { display: flex; gap: 0.6rem; margin-top: 0.85rem; }
+  .vi-save-btn { padding: 0.55rem 1.2rem; background: #1D9E75; color: #fff; border: none; border-radius: 9px; font-weight: 600; cursor: pointer; font-size: 0.875rem; }
+  .vi-cancel-btn { padding: 0.55rem 1.2rem; background: #fff; color: #6b7280; border: 1.5px solid #e5e7eb; border-radius: 9px; font-weight: 600; cursor: pointer; font-size: 0.875rem; }
 
-  addForm: { background: '#fff', border: '1px solid #e5e7eb', borderRadius: '14px', padding: '1.25rem', marginBottom: '1.25rem' },
-  addFormTitle: { fontWeight: 700, fontSize: '0.95rem', color: '#111827', marginBottom: '0.85rem' },
-  formGrid: { display: 'flex', gap: '0.75rem', flexWrap: 'wrap' },
-  input: { flex: '1 1 160px', padding: '0.6rem 0.85rem', border: '1.5px solid #e5e7eb', borderRadius: '9px', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit', color: '#111827' },
-  errMsg: { marginTop: '0.5rem', color: '#ef4444', fontSize: '0.82rem', fontWeight: 500 },
-  formActions: { display: 'flex', gap: '0.6rem', marginTop: '0.85rem' },
-  saveBtn: { padding: '0.55rem 1.2rem', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '9px', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' },
-  cancelBtn: { padding: '0.55rem 1.2rem', background: '#fff', color: '#6b7280', border: '1.5px solid #e5e7eb', borderRadius: '9px', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' },
+  .vi-err-banner { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 0.85rem 1rem; color: #ef4444; font-size: 0.875rem; }
+  .vi-retry-link { background: none; border: none; color: #ef4444; text-decoration: underline; cursor: pointer; font-weight: 600; }
 
-  errBanner: { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '0.85rem 1rem', color: '#ef4444', fontSize: '0.875rem' },
-  retryLink: { background: 'none', border: 'none', color: '#ef4444', textDecoration: 'underline', cursor: 'pointer', fontWeight: 600 },
+  .vi-empty { text-align: center; padding: 3rem; color: #6b7280; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 
-  empty: { textAlign: 'center', padding: '3rem', color: '#6b7280', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' },
+  .vi-list { display: flex; flex-direction: column; gap: 6px; }
+  .vi-row { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 0.85rem 1.1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .vi-row-oos { opacity: 0.7; border-style: dashed; }
+  .vi-row-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .vi-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .vi-med-name { font-weight: 600; font-size: 0.9rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vi-med-qty { font-size: 0.75rem; color: #6b7280; display: flex; align-items: center; gap: 6px; margin-top: 1px; flex-wrap: wrap; }
+  .vi-oos-badge { background: #fef2f2; color: #ef4444; padding: 0.1rem 0.4rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
+  
+  .vi-row-right { display: flex; align-items: center; gap: 8px; }
+  .vi-price { font-weight: 700; font-size: 1rem; color: #1D9E75; min-width: 55px; text-align: right; }
+  .vi-actions { display: flex; gap: 4px; }
+  
+  .vi-edit-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .vi-mini-input { width: 70px; padding: 0.4rem 0.5rem; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 0.82rem; outline: none; text-align: center; }
+  
+  .vi-icon-btn { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .vi-btn-success { background: #1D9E7515; color: #1D9E75; }
+  .vi-btn-gray { background: #6b728015; color: #6b7280; }
+  .vi-btn-blue { background: #3b82f615; color: #3b82f6; }
+  .vi-btn-red { background: #ef444415; color: #ef4444; }
 
-  list: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  row: { background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '0.85rem 1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' },
-  rowOos: { opacity: 0.7, borderStyle: 'dashed' },
-  rowLeft: { display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 },
-  dot: { width: '10px', height: '10px', borderRadius: '50%', flexShrink: 0 },
-  medName: { fontWeight: 600, fontSize: '0.9rem', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  medQty: { fontSize: '0.75rem', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1px' },
-  oosBadge: { background: '#fef2f2', color: '#ef4444', padding: '0.1rem 0.4rem', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 600 },
-  rowRight: { display: 'flex', alignItems: 'center', gap: '8px' },
-  price: { fontWeight: 700, fontSize: '1rem', color: '#1D9E75', minWidth: '55px', textAlign: 'right' },
-  editRow: { display: 'flex', alignItems: 'center', gap: '6px' },
-  miniInput: { width: '70px', padding: '0.4rem 0.5rem', border: '1.5px solid #e5e7eb', borderRadius: '8px', fontSize: '0.82rem', outline: 'none', textAlign: 'center' },
-  iconBtn,
-};
+  /* ═══ RESPONSIVE: Mobile (<768px) ═══ */
+  @media (max-width: 768px) {
+    .vi-page-header { flex-direction: column; gap: 0.75rem; }
+    .vi-add-btn { width: 100%; justify-content: center; }
+    .vi-input { flex: 1 1 100%; }
+    .vi-form-actions { flex-direction: column; }
+    .vi-save-btn, .vi-cancel-btn { width: 100%; }
+    
+    .vi-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    .vi-row-right { width: 100%; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid #f3f4f6; }
+    .vi-price { text-align: left; }
+    .vi-edit-row { width: 100%; padding-top: 0.5rem; border-top: 1px solid #f3f4f6; }
+  }
+`;

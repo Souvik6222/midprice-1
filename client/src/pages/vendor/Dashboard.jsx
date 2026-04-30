@@ -18,75 +18,77 @@ export default function VendorDashboard() {
 
   const lowStock = inventory.filter(i => i.stockQty <= 5);
 
-  if (loading) return <div style={s.center}><div style={s.spinner} /></div>;
+  if (loading) return <div className="vd-center"><div className="vd-spinner" /></div>;
 
   return (
-    <div>
+    <div className="vd-container">
+      <style>{responsiveCSS}</style>
+      
       {/* Header */}
-      <div style={s.pageHeader}>
+      <div className="vd-header">
         <div>
-          <h1 style={s.title}>Dashboard</h1>
-          <p style={s.sub}>Welcome back, {user?.name || 'Vendor'}</p>
+          <h1 className="vd-title">Dashboard</h1>
+          <p className="vd-sub">Welcome back, {user?.name || 'Vendor'}</p>
         </div>
       </div>
 
       {/* Shop Info Card */}
       {pharmacy ? (
-        <div style={s.shopCard}>
-          <div style={s.shopLeft}>
-            <div style={s.shopAvatar}><Store size={22} color="#1D9E75" /></div>
+        <div className="vd-shop-card">
+          <div className="vd-shop-left">
+            <div className="vd-shop-avatar"><Store size={22} color="#1D9E75" /></div>
             <div>
-              <div style={s.shopName}>{pharmacy.name}</div>
+              <div className="vd-shop-name">{pharmacy.name}</div>
               {pharmacy.address && (
-                <div style={s.shopAddr}><MapPin size={13} /> {pharmacy.address}</div>
+                <div className="vd-shop-addr"><MapPin size={13} /> {pharmacy.address}</div>
               )}
               {pharmacy.hours && (
-                <div style={s.shopAddr}><Clock size={13} /> {pharmacy.hours}</div>
+                <div className="vd-shop-addr"><Clock size={13} /> {pharmacy.hours}</div>
               )}
             </div>
           </div>
           {pharmacy.lat && pharmacy.lng ? (
-            <div style={s.coordBadge}>
+            <div className="vd-coord-badge">
               <MapPin size={12} color="#1D9E75" /> {Number(pharmacy.lat).toFixed(4)}, {Number(pharmacy.lng).toFixed(4)}
             </div>
           ) : (
-            <div style={s.noCoord}>Location not set</div>
+            <div className="vd-no-coord">Location not set</div>
           )}
         </div>
       ) : (
-        <div style={s.setupBanner}>
-          <AlertCircle size={18} color="#f59e0b" />
+        <div className="vd-setup-banner">
+          <AlertCircle size={18} color="#f59e0b" style={{ flexShrink: 0 }} />
           <span>Your shop is not set up yet. Go to <strong>Shop Setup</strong> to add your location and name.</span>
         </div>
       )}
 
       {/* Stats */}
-      <div style={s.statsRow}>
-        <div style={s.statCard}>
-          <div style={s.statNum}>{inventory.length}</div>
-          <div style={s.statLabel}>Total Medicines</div>
+      <div className="vd-stats-row">
+        <div className="vd-stat-card">
+          <div className="vd-stat-num">{inventory.length}</div>
+          <div className="vd-stat-label">Total Medicines</div>
         </div>
-        <div style={s.statCard}>
-          <div style={{ ...s.statNum, color: lowStock.length > 0 ? '#ef4444' : '#1D9E75' }}>{lowStock.length}</div>
-          <div style={s.statLabel}>Low Stock (&le;5)</div>
+        <div className="vd-stat-card">
+          <div className="vd-stat-num" style={{ color: lowStock.length > 0 ? '#ef4444' : '#1D9E75' }}>{lowStock.length}</div>
+          <div className="vd-stat-label">Low Stock (&le;5)</div>
         </div>
-        <div style={s.statCard}>
-          <div style={s.statNum}>{inventory.filter(i => i.stockQty > 0).length}</div>
-          <div style={s.statLabel}>In Stock</div>
+        <div className="vd-stat-card">
+          <div className="vd-stat-num">{inventory.filter(i => i.stockQty > 0).length}</div>
+          <div className="vd-stat-label">In Stock</div>
         </div>
       </div>
 
       {/* Low stock alerts */}
       {lowStock.length > 0 && (
-        <div style={s.section}>
-          <div style={s.sectionTitle}><AlertCircle size={16} color="#ef4444" /> Low Stock Alerts</div>
-          <div style={s.alertGrid}>
+        <div className="vd-section">
+          <div className="vd-section-title"><AlertCircle size={16} color="#ef4444" /> Low Stock Alerts</div>
+          <div className="vd-alert-grid">
             {lowStock.map(item => (
-              <div key={item._id} style={s.alertCard}>
+              <div key={item._id} className="vd-alert-card">
                 <Package size={16} color="#f59e0b" />
                 <div style={{ flex: 1 }}>
-                  <div style={s.alertName}>{item.medicineId?.name}</div>
-                  <div style={s.alertQty}>Only {item.stockQty} left</div>
+                  <div className="vd-alert-name">{item.medicineId?.name}</div>
+                  <div className="vd-alert-qty">Only {item.stockQty} left</div>
                 </div>
               </div>
             ))}
@@ -97,32 +99,42 @@ export default function VendorDashboard() {
   );
 }
 
-const s = {
-  center: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px' },
-  spinner: { width: '28px', height: '28px', border: '3px solid #e5e7eb', borderTop: '3px solid #1D9E75', borderRadius: '50%', animation: 'spin 0.8s linear infinite' },
-  pageHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' },
-  title: { fontSize: '1.5rem', fontWeight: 800, color: '#111827', margin: 0, letterSpacing: '-0.3px' },
-  sub: { fontSize: '0.85rem', color: '#9ca3af', margin: '2px 0 0', fontWeight: 400 },
+const responsiveCSS = `
+  .vd-container { width: 100%; }
+  
+  .vd-center { display: flex; align-items: center; justify-content: center; height: 200px; }
+  .vd-spinner { width: 28px; height: 28px; border: 3px solid #e5e7eb; border-top: 3px solid #1D9E75; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  
+  .vd-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+  .vd-title { font-size: 1.5rem; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.3px; }
+  .vd-sub { font-size: 0.85rem; color: #9ca3af; margin: 2px 0 0; font-weight: 400; }
 
-  shopCard: { background: '#fff', border: '1px solid #e5e7eb', borderRadius: '14px', padding: '1.1rem 1.3rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' },
-  shopLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
-  shopAvatar: { width: '44px', height: '44px', borderRadius: '12px', background: '#f0fdf7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  shopName: { fontWeight: 700, fontSize: '1rem', color: '#111827' },
-  shopAddr: { fontSize: '0.78rem', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' },
-  coordBadge: { fontSize: '0.75rem', fontWeight: 600, color: '#1D9E75', background: '#f0fdf7', padding: '0.3rem 0.7rem', borderRadius: '20px', whiteSpace: 'nowrap' },
-  noCoord: { fontSize: '0.75rem', color: '#9ca3af', fontStyle: 'italic' },
+  .vd-shop-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.1rem 1.3rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .vd-shop-left { display: flex; align-items: center; gap: 12px; }
+  .vd-shop-avatar { width: 44px; height: 44px; border-radius: 12px; background: #f0fdf7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .vd-shop-name { font-weight: 700; font-size: 1rem; color: #111827; }
+  .vd-shop-addr { font-size: 0.78rem; color: #6b7280; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  
+  .vd-coord-badge { font-size: 0.75rem; font-weight: 600; color: #1D9E75; background: #f0fdf7; padding: 0.3rem 0.7rem; border-radius: 20px; white-space: nowrap; }
+  .vd-no-coord { font-size: 0.75rem; color: #9ca3af; font-style: italic; }
 
-  setupBanner: { display: 'flex', alignItems: 'center', gap: '10px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '0.9rem 1.1rem', marginBottom: '1.25rem', color: '#78350f', fontSize: '0.88rem' },
+  .vd-setup-banner { display: flex; align-items: center; gap: 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 0.9rem 1.1rem; margin-bottom: 1.25rem; color: #78350f; font-size: 0.88rem; }
 
-  statsRow: { display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' },
-  statCard: { flex: 1, background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '1rem 1.1rem', textAlign: 'center' },
-  statNum: { fontSize: '2rem', fontWeight: 800, color: '#111827', lineHeight: 1.1 },
-  statLabel: { fontSize: '0.72rem', color: '#9ca3af', marginTop: '4px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' },
+  .vd-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+  .vd-stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem 1.1rem; text-align: center; }
+  .vd-stat-num { font-size: 2rem; font-weight: 800; color: #111827; line-height: 1.1; }
+  .vd-stat-label { font-size: 0.72rem; color: #9ca3af; margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
 
-  section: { marginTop: '0.5rem' },
-  sectionTitle: { fontSize: '0.9rem', fontWeight: 700, color: '#374151', marginBottom: '0.6rem' },
-  alertGrid: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  alertCard: { display: 'flex', alignItems: 'center', gap: '10px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '0.7rem 1rem' },
-  alertName: { fontWeight: 600, fontSize: '0.88rem', color: '#111827' },
-  alertQty: { fontSize: '0.75rem', color: '#f59e0b', fontWeight: 600 },
-};
+  .vd-section { margin-top: 0.5rem; }
+  .vd-section-title { font-size: 0.9rem; font-weight: 700; color: #374151; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px; }
+  .vd-alert-grid { display: flex; flex-direction: column; gap: 6px; }
+  .vd-alert-card { display: flex; align-items: center; gap: 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 0.7rem 1rem; }
+  .vd-alert-name { font-weight: 600; font-size: 0.88rem; color: #111827; }
+  .vd-alert-qty { font-size: 0.75rem; color: #f59e0b; font-weight: 600; }
+
+  /* ═══ RESPONSIVE: Mobile (<768px) ═══ */
+  @media (max-width: 768px) {
+    .vd-shop-card { flex-direction: column; align-items: flex-start; }
+    .vd-stats-row { grid-template-columns: 1fr; }
+  }
+`;

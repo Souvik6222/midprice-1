@@ -175,36 +175,38 @@ export default function PatientSearch() {
   const initials = (user?.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div style={st.shell}>
+    <div className="ps-shell">
+      <style>{responsiveCSS}</style>
+      
       {/* ─── NAV BAR ─── */}
-      <div style={st.navBar}>
-        <div style={st.brand}><span style={st.brandDot} /> MedPrice</div>
-        <div style={st.navRight} ref={accountRef}>
-          <button style={st.avatarBtn} onClick={() => setShowAccount(!showAccount)}>{initials}</button>
+      <div className="ps-nav-bar">
+        <div className="ps-brand"><span className="ps-brand-dot" /> MedPrice</div>
+        <div className="ps-nav-right" ref={accountRef}>
+          <button className="ps-avatar-btn" onClick={() => setShowAccount(!showAccount)}>{initials}</button>
           {showAccount && (
-            <div style={st.dropdown}>
-              <div style={st.ddHeader}>
-                <div style={st.ddAvatar}>{initials}</div>
+            <div className="ps-dropdown">
+              <div className="ps-dd-header">
+                <div className="ps-dd-avatar">{initials}</div>
                 <div>
-                  <div style={st.ddName}>{user?.name || 'Guest'}</div>
-                  <div style={st.ddRole}>Patient Account</div>
+                  <div className="ps-dd-name">{user?.name || 'Guest'}</div>
+                  <div className="ps-dd-role">Patient Account</div>
                 </div>
               </div>
-              <div style={st.ddDivider} />
-              <div style={st.ddRow}><User size={14} color="#6b7280" /><span style={st.ddLabel}>Name</span><span style={st.ddVal}>{user?.name || 'Guest'}</span></div>
-              <div style={st.ddRow}><Phone size={14} color="#6b7280" /><span style={st.ddLabel}>Phone</span><span style={st.ddVal}>{user?.phone || 'N/A'}</span></div>
-              <div style={st.ddRow}><Shield size={14} color="#6b7280" /><span style={st.ddLabel}>Role</span><span style={st.ddVal}>{user?.role || 'patient'}</span></div>
-              <div style={st.ddDivider} />
-              <button style={st.ddLogout} onClick={handleLogout}><LogOut size={14} /> Logout</button>
+              <div className="ps-dd-divider" />
+              <div className="ps-dd-row"><User size={14} color="#6b7280" /><span className="ps-dd-label">Name</span><span className="ps-dd-val">{user?.name || 'Guest'}</span></div>
+              <div className="ps-dd-row"><Phone size={14} color="#6b7280" /><span className="ps-dd-label">Phone</span><span className="ps-dd-val">{user?.phone || 'N/A'}</span></div>
+              <div className="ps-dd-row"><Shield size={14} color="#6b7280" /><span className="ps-dd-label">Role</span><span className="ps-dd-val">{user?.role || 'patient'}</span></div>
+              <div className="ps-dd-divider" />
+              <button className="ps-dd-logout" onClick={handleLogout}><LogOut size={14} /> Logout</button>
             </div>
           )}
         </div>
       </div>
 
       {/* ─── MAIN AREA ─── */}
-      <div style={st.main}>
+      <div className="ps-main">
         {/* ─── MAP (left) ─── */}
-        <div style={st.mapArea}>
+        <div className="ps-map-area">
           <MapContainer
             center={[defaultCenter.lat, defaultCenter.lng]}
             zoom={13}
@@ -242,82 +244,81 @@ export default function PatientSearch() {
 
           {/* Route info floating on map */}
           {routeInfo && (
-            <div style={st.routeBar}>
+            <div className="ps-route-bar">
               <Navigation size={16} color="#3b82f6" />
               <div style={{ flex: 1 }}>
-                <div style={st.routeTitle}>Route to {routeInfo.name}</div>
-                <div style={st.routeMeta}>{routeInfo.dist} km · ~{routeInfo.dur} min drive</div>
+                <div className="ps-route-title">Route to {routeInfo.name}</div>
+                <div className="ps-route-meta">{routeInfo.dist} km · ~{routeInfo.dur} min drive</div>
               </div>
-              <button style={st.routeClose} onClick={clearRoute}><X size={14} /></button>
+              <button className="ps-route-close" onClick={clearRoute}><X size={14} /></button>
             </div>
           )}
           {routeLoading && (
-            <div style={st.routeBar}>
+            <div className="ps-route-bar">
               <Navigation size={16} color="#3b82f6" />
-              <span style={st.routeTitle}>Finding shortest route...</span>
+              <span className="ps-route-title">Finding shortest route...</span>
             </div>
           )}
         </div>
 
         {/* ─── RIGHT SIDEBAR ─── */}
-        <div style={st.sidebar}>
+        <div className="ps-sidebar">
           {/* Search */}
-          <div style={st.searchSection}>
-            <div style={st.searchLabel}><Search size={18} color="#1D9E75" /> Find Medicines Near You</div>
-            <form onSubmit={handleSearch} style={st.searchForm}>
+          <div className="ps-search-section">
+            <div className="ps-search-label"><Search size={18} color="#1D9E75" /> Find Medicines Near You</div>
+            <form onSubmit={handleSearch} className="ps-search-form">
               <input
-                ref={inputRef} style={st.searchInput}
+                ref={inputRef} className="ps-search-input"
                 placeholder="Search medicine name..."
                 value={query} onChange={e => setQuery(e.target.value)} autoFocus
               />
-              <button type="submit" style={st.searchBtn} disabled={loading}>
+              <button type="submit" className="ps-search-btn" disabled={loading}>
                 {loading ? '...' : 'Search'}
               </button>
             </form>
             {userLoc && (
-              <div style={st.locInfo}><MapPin size={12} color="#3b82f6" /> Location detected</div>
+              <div className="ps-loc-info"><MapPin size={12} color="#3b82f6" /> Location detected</div>
             )}
           </div>
 
           {/* Results */}
-          <div style={st.resultsList}>
+          <div className="ps-results-list">
             {!searched && (
-              <div style={st.emptyState}>
+              <div className="ps-empty-state">
                 <MapPin size={36} color="#d1d5db" />
-                <div style={st.emptyTitle}>Search for a medicine</div>
-                <div style={st.emptySub}>Results will appear here with prices and directions</div>
+                <div className="ps-empty-title">Search for a medicine</div>
+                <div className="ps-empty-sub">Results will appear here with prices and directions</div>
               </div>
             )}
 
             {searched && results.length === 0 && (
-              <div style={st.emptyState}>
+              <div className="ps-empty-state">
                 <Search size={36} color="#d1d5db" />
-                <div style={st.emptyTitle}>No results found</div>
-                <div style={st.emptySub}>No pharmacy near you has "{query}"</div>
+                <div className="ps-empty-title">No results found</div>
+                <div className="ps-empty-sub">No pharmacy near you has "{query}"</div>
               </div>
             )}
 
             {searched && results.length > 0 && (
               <>
-                <div style={st.resultCount}>{results.length} result{results.length !== 1 ? 's' : ''}</div>
+                <div className="ps-result-count">{results.length} result{results.length !== 1 ? 's' : ''}</div>
                 {results.map((r, i) => (
                   <div
                     key={r.inventoryId}
-                    style={{ ...st.card, ...(selectedId === r.inventoryId ? st.cardActive : {}), ...(i === 0 ? st.cardBest : {}) }}
+                    className={`ps-card ${selectedId === r.inventoryId ? 'ps-card-active' : ''} ${i === 0 ? 'ps-card-best' : ''}`}
                     onClick={() => handleCardClick(r)}
                   >
-                    {i === 0 && <div style={st.bestBadge}>Best Price</div>}
-                    <div style={st.cardRow}>
-                      <div style={st.cardLeft}>
-                        <div style={st.medName}>{r.medicine.name}</div>
-                        <div style={st.shopName}>{r.pharmacy.name}</div>
-                        {r.pharmacy.address && <div style={st.shopAddr}>{r.pharmacy.address}</div>}
+                    {i === 0 && <div className="ps-best-badge">Best Price</div>}
+                    <div className="ps-card-row">
+                      <div className="ps-card-left">
+                        <div className="ps-med-name">{r.medicine.name}</div>
+                        <div className="ps-shop-name">{r.pharmacy.name}</div>
+                        {r.pharmacy.address && <div className="ps-shop-addr">{r.pharmacy.address}</div>}
                       </div>
-                      <div style={st.cardRight}>
-                        <div style={st.price}>₹{r.sellingPrice}</div>
-                        {r.distance > 0 && <div style={st.dist}>{r.distance} km</div>}
-                        <div style={{
-                          ...st.stockTag,
+                      <div className="ps-card-right">
+                        <div className="ps-price">₹{r.sellingPrice}</div>
+                        {r.distance > 0 && <div className="ps-dist">{r.distance} km</div>}
+                        <div className="ps-stock-tag" style={{
                           background: r.stockQty > 5 ? '#dcfce7' : r.stockQty > 0 ? '#fef9c3' : '#fee2e2',
                           color:      r.stockQty > 5 ? '#15803d' : r.stockQty > 0 ? '#854d0e' : '#b91c1c',
                         }}>
@@ -325,7 +326,7 @@ export default function PatientSearch() {
                         </div>
                       </div>
                     </div>
-                    <button style={st.dirBtn} onClick={(e) => { e.stopPropagation(); handleDirections(r.pharmacy); }}>
+                    <button className="ps-dir-btn" onClick={(e) => { e.stopPropagation(); handleDirections(r.pharmacy); }}>
                       <Navigation size={12} /> Directions
                     </button>
                   </div>
@@ -339,138 +340,78 @@ export default function PatientSearch() {
   );
 }
 
-/* ─── Styles ─── */
-const st = {
-  shell: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif", overflow: 'hidden' },
+const responsiveCSS = `
+  .ps-shell { width: 100%; height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; overflow: hidden; }
 
   /* Nav */
-  navBar: {
-    height: '52px', minHeight: '52px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    padding: '0 1.25rem', background: '#fff', borderBottom: '1px solid #eee',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.04)', zIndex: 100,
-  },
-  brand: { fontWeight: 800, fontSize: '1.15rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' },
-  brandDot: { width: '8px', height: '8px', borderRadius: '50%', background: '#1D9E75' },
-  navRight: { position: 'relative' },
-  avatarBtn: {
-    width: '34px', height: '34px', borderRadius: '50%', background: '#1D9E75',
-    color: '#fff', border: 'none', cursor: 'pointer',
-    fontWeight: 800, fontSize: '0.78rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-  },
+  .ps-nav-bar { height: 52px; min-height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; background: #fff; border-bottom: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.04); z-index: 100; }
+  .ps-brand { font-weight: 800; font-size: 1.15rem; color: #111827; display: flex; align-items: center; gap: 6px; }
+  .ps-brand-dot { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; }
+  .ps-nav-right { position: relative; }
+  .ps-avatar-btn { width: 34px; height: 34px; border-radius: 50%; background: #1D9E75; color: #fff; border: none; cursor: pointer; font-weight: 800; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
   /* Dropdown */
-  dropdown: {
-    position: 'absolute', top: '42px', right: 0, width: '260px',
-    background: '#fff', borderRadius: '14px', border: '1px solid #e5e7eb',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '0.65rem 0', zIndex: 200,
-  },
-  ddHeader: { display: 'flex', alignItems: 'center', gap: '10px', padding: '0.4rem 1rem 0.5rem' },
-  ddAvatar: {
-    width: '36px', height: '36px', borderRadius: '50%',
-    background: 'linear-gradient(135deg, #1D9E75, #14b8a6)',
-    color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontWeight: 800, fontSize: '0.85rem', flexShrink: 0,
-  },
-  ddName: { fontWeight: 700, fontSize: '0.88rem', color: '#111827' },
-  ddRole: { fontSize: '0.7rem', color: '#9ca3af', fontWeight: 500 },
-  ddDivider: { height: '1px', background: '#f3f4f6', margin: '0.2rem 0' },
-  ddRow: { display: 'flex', alignItems: 'center', gap: '8px', padding: '0.4rem 1rem', fontSize: '0.8rem' },
-  ddLabel: { fontWeight: 500, color: '#9ca3af', width: '48px' },
-  ddVal: { fontWeight: 600, color: '#374151', flex: 1, textAlign: 'right' },
-  ddLogout: {
-    width: 'calc(100% - 1.6rem)', margin: '0.3rem 0.8rem 0.2rem',
-    padding: '0.5rem', borderRadius: '10px', border: 'none',
-    background: '#fef2f2', color: '#ef4444', cursor: 'pointer',
-    fontWeight: 700, fontSize: '0.8rem',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-  },
+  .ps-dropdown { position: absolute; top: 42px; right: 0; width: 260px; background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; box-shadow: 0 8px 32px rgba(0,0,0,0.12); padding: 0.65rem 0; z-index: 200; }
+  .ps-dd-header { display: flex; align-items: center; gap: 10px; padding: 0.4rem 1rem 0.5rem; }
+  .ps-dd-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1D9E75, #14b8a6); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
+  .ps-dd-name { font-weight: 700; font-size: 0.88rem; color: #111827; }
+  .ps-dd-role { font-size: 0.7rem; color: #9ca3af; font-weight: 500; }
+  .ps-dd-divider { height: 1px; background: #f3f4f6; margin: 0.2rem 0; }
+  .ps-dd-row { display: flex; align-items: center; gap: 8px; padding: 0.4rem 1rem; font-size: 0.8rem; }
+  .ps-dd-label { font-weight: 500; color: #9ca3af; width: 48px; }
+  .ps-dd-val { font-weight: 600; color: #374151; flex: 1; text-align: right; }
+  .ps-dd-logout { width: calc(100% - 1.6rem); margin: 0.3rem 0.8rem 0.2rem; padding: 0.5rem; border-radius: 10px; border: none; background: #fef2f2; color: #ef4444; cursor: pointer; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
   /* Main layout */
-  main: { flex: 1, display: 'flex', overflow: 'hidden' },
+  .ps-main { flex: 1; display: flex; overflow: hidden; }
 
   /* Map area */
-  mapArea: { flex: 1, position: 'relative' },
+  .ps-map-area { flex: 1; position: relative; }
 
-  /* Route bar (floats on map) */
-  routeBar: {
-    position: 'absolute', bottom: '16px', left: '16px', right: '16px',
-    zIndex: 500, background: '#fff', borderRadius: '12px', padding: '0.6rem 0.85rem',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: '10px',
-  },
-  routeTitle: { fontWeight: 700, fontSize: '0.82rem', color: '#111827' },
-  routeMeta: { fontSize: '0.72rem', color: '#3b82f6', fontWeight: 600 },
-  routeClose: {
-    width: '26px', height: '26px', borderRadius: '50%', border: 'none',
-    background: '#f3f4f6', cursor: 'pointer', display: 'flex',
-    alignItems: 'center', justifyContent: 'center', color: '#6b7280',
-  },
+  /* Route bar */
+  .ps-route-bar { position: absolute; bottom: 16px; left: 16px; right: 16px; z-index: 500; background: #fff; border-radius: 12px; padding: 0.6rem 0.85rem; box-shadow: 0 2px 12px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 10px; }
+  .ps-route-title { font-weight: 700; font-size: 0.82rem; color: #111827; }
+  .ps-route-meta { font-size: 0.72rem; color: #3b82f6; font-weight: 600; }
+  .ps-route-close { width: 26px; height: 26px; border-radius: 50%; border: none; background: #f3f4f6; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; }
 
-  /* Right sidebar */
-  sidebar: {
-    width: SIDEBAR_W, minWidth: SIDEBAR_W, height: '100%',
-    background: '#fff', borderLeft: '1px solid #eee',
-    display: 'flex', flexDirection: 'column', overflow: 'hidden',
-  },
+  /* Sidebar */
+  .ps-sidebar { width: 380px; min-width: 380px; height: 100%; background: #fff; border-left: 1px solid #eee; display: flex; flex-direction: column; overflow: hidden; }
 
   /* Search section */
-  searchSection: { padding: '1rem 1rem 0.75rem', borderBottom: '1px solid #f3f4f6' },
-  searchLabel: {
-    fontSize: '1rem', fontWeight: 800, color: '#111827', marginBottom: '0.6rem',
-    display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px',
-  },
-  searchForm: { display: 'flex', gap: '6px' },
-  searchInput: {
-    flex: 1, border: '1.5px solid #e5e7eb', background: '#f9fafb', borderRadius: '10px',
-    padding: '0.6rem 0.75rem', fontSize: '0.85rem', outline: 'none', fontFamily: 'inherit', color: '#111827',
-  },
-  searchBtn: {
-    padding: '0.6rem 1rem', background: '#1D9E75', color: '#fff', border: 'none',
-    borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontSize: '0.82rem', flexShrink: 0,
-  },
-  locInfo: { display: 'flex', alignItems: 'center', gap: '5px', marginTop: '0.5rem', fontSize: '0.72rem', color: '#6b7280' },
+  .ps-search-section { padding: 1rem 1rem 0.75rem; border-bottom: 1px solid #f3f4f6; }
+  .ps-search-label { font-size: 1rem; font-weight: 800; color: #111827; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
+  .ps-search-form { display: flex; gap: 6px; }
+  .ps-search-input { flex: 1; border: 1.5px solid #e5e7eb; background: #f9fafb; border-radius: 10px; padding: 0.6rem 0.75rem; font-size: 0.85rem; outline: none; font-family: inherit; color: #111827; }
+  .ps-search-btn { padding: 0.6rem 1rem; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.82rem; flex-shrink: 0; }
+  .ps-loc-info { display: flex; align-items: center; gap: 5px; margin-top: 0.5rem; font-size: 0.72rem; color: #6b7280; }
 
   /* Results list */
-  resultsList: { flex: 1, overflowY: 'auto', padding: '0.75rem' },
-
-  emptyState: {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    padding: '3rem 1rem', textAlign: 'center',
-  },
-  emptyTitle: { fontWeight: 700, fontSize: '0.95rem', color: '#374151', marginTop: '0.75rem' },
-  emptySub: { fontSize: '0.78rem', color: '#9ca3af', marginTop: '0.25rem' },
-
-  resultCount: { fontSize: '0.75rem', fontWeight: 700, color: '#6b7280', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' },
+  .ps-results-list { flex: 1; overflow-y: auto; padding: 0.75rem; }
+  .ps-empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1rem; text-align: center; }
+  .ps-empty-title { font-weight: 700; font-size: 0.95rem; color: #374151; margin-top: 0.75rem; }
+  .ps-empty-sub { font-size: 0.78rem; color: #9ca3af; margin-top: 0.25rem; }
+  .ps-result-count { font-size: 0.75rem; font-weight: 700; color: #6b7280; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* Cards */
-  card: {
-    padding: '0.7rem 0.85rem', borderRadius: '12px', border: '1.5px solid #f3f4f6',
-    cursor: 'pointer', transition: 'all 0.15s ease', position: 'relative',
-    overflow: 'hidden', marginBottom: '6px',
-  },
-  cardActive: { border: '1.5px solid #1D9E75', background: '#f0fdf7' },
-  cardBest: { border: '2px solid #1D9E75' },
-  bestBadge: {
-    position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-    background: '#1D9E75', color: '#fff',
-    fontSize: '0.62rem', fontWeight: 800,
-    padding: '0.15rem 0.6rem', borderRadius: '0 0 8px 8px',
-    textTransform: 'uppercase', letterSpacing: '0.5px',
-  },
-  cardRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' },
-  cardLeft: { flex: 1, minWidth: 0 },
-  medName: { fontWeight: 700, fontSize: '0.85rem', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  shopName: { fontSize: '0.75rem', color: '#1D9E75', fontWeight: 600, marginTop: '1px' },
-  shopAddr: { fontSize: '0.68rem', color: '#9ca3af', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  cardRight: { textAlign: 'right', flexShrink: 0 },
-  price: { fontWeight: 800, fontSize: '1.1rem', color: '#111827' },
-  dist: { fontSize: '0.7rem', color: '#6b7280' },
-  stockTag: { fontSize: '0.62rem', fontWeight: 700, padding: '0.1rem 0.35rem', borderRadius: '5px', marginTop: '2px', display: 'inline-block' },
+  .ps-card { padding: 0.7rem 0.85rem; border-radius: 12px; border: 1.5px solid #f3f4f6; cursor: pointer; transition: all 0.15s ease; position: relative; overflow: hidden; margin-bottom: 6px; }
+  .ps-card-active { border: 1.5px solid #1D9E75; background: #f0fdf7; }
+  .ps-card-best { border: 2px solid #1D9E75; }
+  .ps-best-badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: #1D9E75; color: #fff; font-size: 0.62rem; font-weight: 800; padding: 0.15rem 0.6rem; border-radius: 0 0 8px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ps-card-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .ps-card-left { flex: 1; min-width: 0; }
+  .ps-med-name { font-weight: 700; font-size: 0.85rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ps-shop-name { font-size: 0.75rem; color: #1D9E75; font-weight: 600; margin-top: 1px; }
+  .ps-shop-addr { font-size: 0.68rem; color: #9ca3af; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ps-card-right { text-align: right; flex-shrink: 0; }
+  .ps-price { font-weight: 800; font-size: 1.1rem; color: #111827; }
+  .ps-dist { font-size: 0.7rem; color: #6b7280; }
+  .ps-stock-tag { font-size: 0.62rem; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 5px; margin-top: 2px; display: inline-block; }
+  .ps-dir-btn { margin-top: 0.4rem; padding: 0.3rem 0.65rem; background: #111827; color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 0.7rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
-  dirBtn: {
-    marginTop: '0.4rem', padding: '0.3rem 0.65rem',
-    background: '#111827', color: '#fff', border: 'none', borderRadius: '6px',
-    fontWeight: 600, fontSize: '0.7rem', cursor: 'pointer',
-    display: 'inline-flex', alignItems: 'center', gap: '4px',
-  },
-};
+  /* ═══ RESPONSIVE: Mobile (<768px) ═══ */
+  @media (max-width: 768px) {
+    .ps-main { flex-direction: column; }
+    .ps-map-area { flex: 1; min-height: 40vh; max-height: 50vh; }
+    .ps-sidebar { width: 100%; min-width: 100%; flex: 1; border-left: none; border-top: 1px solid #eee; }
+  }
+`;
