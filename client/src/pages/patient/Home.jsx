@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
+import { Pill, IndianRupee, Store, Flame, Hand } from 'lucide-react';
 
 const s = {
   page: { maxWidth: '960px' },
@@ -113,9 +114,9 @@ const s = {
 };
 
 const statsData = [
-  { icon: '💊', label: 'Medicines Tracked', value: 12, prefix: '' },
-  { icon: '💰', label: 'Avg Savings', value: 340, prefix: '₹' },
-  { icon: '🏪', label: 'Nearby Pharmacies', value: 8, prefix: '' },
+  { icon: <Pill size={24} color="#3b82f6" />, label: 'Medicines Tracked', value: 12, prefix: '' },
+  { icon: <IndianRupee size={24} color="#1D9E75" />, label: 'Avg Savings', value: 340, prefix: '₹' },
+  { icon: <Store size={24} color="#f59e0b" />, label: 'Nearby Pharmacies', value: 8, prefix: '' },
 ];
 
 /* Framer Motion variants */
@@ -201,7 +202,7 @@ function Home() {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <div style={s.greeting}>Good morning 👋</div>
+        <div style={{...s.greeting, display: 'flex', alignItems: 'center', gap: '8px'}}>Good morning <Hand size={24} color="#f59e0b" /></div>
         <div style={s.greetingSub}>Here's your health savings overview</div>
       </motion.div>
 
@@ -219,12 +220,12 @@ function Home() {
 
       {/* Today's Price Drops */}
       <motion.div
-        style={s.sectionHeading}
+        style={{...s.sectionHeading, display: 'flex', alignItems: 'center', gap: '6px'}}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.4 }}
       >
-        Today's Price Drops 🔥
+        Today's Price Drops <Flame size={20} color="#ef4444" />
       </motion.div>
 
       <motion.div

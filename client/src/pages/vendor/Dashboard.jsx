@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
+import { ClipboardList, Pill, AlertTriangle, Package, Store, Loader2 } from 'lucide-react';
 
 const s = {
   page: { maxWidth: '960px' },
@@ -21,12 +22,12 @@ const s = {
   actionRow: { display: 'flex', gap: '0.5rem' },
   markReadyBtn: { padding: '0.4rem 0.8rem', borderRadius: '8px', border: 'none', background: '#1D9E75', color: '#fff', fontWeight: 600, fontSize: '0.78rem', cursor: 'pointer', transition: 'background 0.2s ease' },
   cancelBtn: { padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1.5px solid #e5e7eb', background: '#fff', color: '#6b7280', fontWeight: 600, fontSize: '0.78rem', cursor: 'pointer', transition: 'all 0.2s ease' },
-  loading: { textAlign: 'center', padding: '2rem', color: '#1D9E75', fontSize: '0.95rem', fontWeight: 600 },
+  loading: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '2rem', color: '#1D9E75', fontSize: '0.95rem', fontWeight: 600 },
   empty: { textAlign: 'center', padding: '2rem', color: '#9ca3af', fontSize: '0.9rem' },
   lowStockRow: { display: 'flex', gap: '1rem' },
   lowStockCard: { flex: 1, background: '#fff', borderRadius: '16px', padding: '1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', border: '1px solid #f3f4f6', borderLeft: '3px solid #f59e0b', transition: 'transform 0.2s ease, box-shadow 0.2s ease' },
   lowStockName: { fontSize: '0.95rem', fontWeight: 700, color: '#1a1a2e', marginBottom: '0.25rem' },
-  lowStockQty: { fontSize: '0.8rem', color: '#f59e0b', fontWeight: 600, marginBottom: '0.75rem' },
+  lowStockQty: { display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: '#f59e0b', fontWeight: 600, marginBottom: '0.75rem' },
   updateBtn: { padding: '0.45rem 0.9rem', borderRadius: '8px', border: '1.5px solid #1D9E75', background: '#fff', color: '#1D9E75', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s ease' },
 };
 
@@ -73,15 +74,15 @@ function VendorDashboard() {
   const listedCount = inventory.filter((i) => i.isListed).length;
 
   const statsData = [
-    { icon: '📋', label: "Pending Reservations", value: String(reservations.length) },
-    { icon: '💊', label: 'Medicines Listed', value: String(listedCount) },
-    { icon: '⚠️', label: 'Low Stock Items', value: String(lowStockItems.length) },
-    { icon: '📦', label: 'Total Inventory', value: String(inventory.length) },
+    { icon: <ClipboardList size={24} color="#1D9E75" />, label: "Pending Reservations", value: String(reservations.length) },
+    { icon: <Pill size={24} color="#3b82f6" />, label: 'Medicines Listed', value: String(listedCount) },
+    { icon: <AlertTriangle size={24} color="#f59e0b" />, label: 'Low Stock Items', value: String(lowStockItems.length) },
+    { icon: <Package size={24} color="#8b5cf6" />, label: 'Total Inventory', value: String(inventory.length) },
   ];
 
   return (
     <div style={s.page}>
-      <div style={s.greeting}>Pharmacy Dashboard 🏪</div>
+      <div style={{...s.greeting, display: 'flex', alignItems: 'center', gap: '8px'}}><Store size={28} /> Pharmacy Dashboard</div>
 
       {error && (
         <div style={{ background: '#fef2f2', border: '2px solid #ef4444', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', color: '#ef4444', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -102,15 +103,15 @@ function VendorDashboard() {
         ))}
       </div>
 
-      <div style={s.sectionHeading}>Pending Reservations 📋</div>
+      <div style={{...s.sectionHeading, display: 'flex', alignItems: 'center', gap: '6px'}}><ClipboardList size={20} /> Pending Reservations</div>
       <div style={s.tableWrap}>
         <table style={s.table}>
           <thead><tr><th style={s.th}>Patient</th><th style={s.th}>Medicine</th><th style={s.th}>Qty</th><th style={s.th}>Code</th><th style={s.th}>Status</th><th style={s.th}>Action</th></tr></thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={s.loading}>⏳ Loading...</td></tr>
+              <tr><td colSpan={6} style={s.loading}><Loader2 size={18} className="animate-spin" /> Loading...</td></tr>
             ) : reservations.length === 0 ? (
-              <tr><td colSpan={6} style={s.empty}>No pending reservations 🎉</td></tr>
+              <tr><td colSpan={6} style={s.empty}>No pending reservations</td></tr>
             ) : (
               reservations.map((r) => (
                 <tr key={r._id}>
@@ -134,14 +135,14 @@ function VendorDashboard() {
 
       {lowStockItems.length > 0 && (
         <>
-          <div style={s.sectionHeading}>Low Stock Alerts ⚠️</div>
+          <div style={{...s.sectionHeading, display: 'flex', alignItems: 'center', gap: '6px'}}><AlertTriangle size={20} color="#ef4444" /> Low Stock Alerts</div>
           <div style={s.lowStockRow}>
             {lowStockItems.slice(0, 3).map((item) => (
               <div key={item._id} style={s.lowStockCard}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.07)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)'; }}>
                 <div style={s.lowStockName}>{item.medicineId?.name || 'Medicine'}</div>
-                <div style={s.lowStockQty}>⚠️ {item.stockQty} left</div>
+                <div style={s.lowStockQty}><AlertTriangle size={14} /> {item.stockQty} left</div>
                 <button style={s.updateBtn} onClick={() => navigate('/vendor/inventory')}>Update Stock</button>
               </div>
             ))}

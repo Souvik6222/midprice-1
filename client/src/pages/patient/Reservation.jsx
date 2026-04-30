@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../lib/api';
+import { ClipboardList, Store, MapPin, Clock, Phone, CheckCircle, Check } from 'lucide-react';
 
 /* ── Step labels ── */
 const steps = ['Select Medicine', 'Confirm Details', 'Done'];
@@ -322,7 +323,7 @@ const s = {
 };
 
 function Reservation() {
-  const { medicineId } = useParams();
+  const { id: medicineId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [step, setStep] = useState(2);
@@ -388,7 +389,7 @@ function Reservation() {
                     : s.stepCircleInactive),
                 }}
               >
-                {isDone ? '✓' : stepNum}
+                {isDone ? <Check size={16} strokeWidth={3} /> : stepNum}
               </div>
               <span
                 style={{
@@ -412,14 +413,20 @@ function Reservation() {
         {/* Left: Order Summary */}
         <div style={s.leftCol}>
           <div style={s.card}>
-            <div style={s.cardTitle}>📋 Order Summary</div>
+            <div style={{...s.cardTitle, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <ClipboardList size={14} /> Order Summary
+            </div>
 
             <div style={s.medName}>{medicineName}</div>
             <div style={s.medMeta}>
               Quantity to reserve
             </div>
-            <div style={s.pharmacyRow}>🏪 {pharmacyName}</div>
-            <div style={s.addressRow}>📍 Pending full address...</div>
+            <div style={{...s.pharmacyRow, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <Store size={14} /> {pharmacyName}
+            </div>
+            <div style={{...s.addressRow, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <MapPin size={12} /> Pending full address...
+            </div>
 
             {/* Quantity stepper */}
             <div style={s.qtyLabel}>Quantity</div>
@@ -477,18 +484,26 @@ function Reservation() {
         {/* Right: Pharmacy Info */}
         <div style={s.rightCol}>
           <div style={s.card}>
-            <div style={s.cardTitle}>🏪 Pharmacy Details</div>
+            <div style={{...s.cardTitle, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <Store size={14} /> Pharmacy Details
+            </div>
             <div style={s.phName}>{pharmacyName}</div>
-            <div style={s.phDetail}>📍 Address details loading...</div>
-            <div style={s.phDetail}>🕐 Check directly with store</div>
-            <div style={s.phDetail}>📞 Available after reserve</div>
+            <div style={{...s.phDetail, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <MapPin size={12} /> Address details loading...
+            </div>
+            <div style={{...s.phDetail, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <Clock size={12} /> Check directly with store
+            </div>
+            <div style={{...s.phDetail, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <Phone size={12} /> Available after reserve
+            </div>
 
             <button
-              style={s.callBtn}
+              style={{...s.callBtn, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'}}
               onMouseEnter={(e) => (e.currentTarget.style.background = '#f0fdf7')}
               onMouseLeave={(e) => (e.currentTarget.style.background = '#fff')}
             >
-              📞 Call Pharmacy
+              <Phone size={14} /> Call Pharmacy
             </button>
           </div>
         </div>
@@ -500,7 +515,7 @@ function Reservation() {
   const renderStep3 = () => (
     <div style={s.confirmationWrap}>
       <div style={s.confirmationCard}>
-        <div style={s.checkCircle}>✓</div>
+        <div style={s.checkCircle}><CheckCircle size={40} color="#fff" /></div>
         <div style={s.confirmHeading}>Reservation Confirmed!</div>
         <div style={s.confirmSubtext}>
           Your medicine has been reserved. Show the QR code at the pharmacy counter to collect it.

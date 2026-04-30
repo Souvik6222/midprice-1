@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
+import { Hospital, Pill, ArrowRight } from 'lucide-react';
 
 const s = {
   container: {
@@ -260,11 +261,11 @@ function RoleSelector() {
               onClick={() => setSelectedRole('patient')}
             >
               <motion.span
-                style={s.cardIcon}
+                style={{...s.cardIcon, display: 'flex', alignItems: 'center', justifyContent: 'center'}}
                 animate={selectedRole === 'patient' ? { rotate: [0, -10, 10, 0], scale: 1.1 } : { scale: 1 }}
                 transition={{ duration: 0.4 }}
               >
-                🏥
+                <Hospital size={40} color={selectedRole === 'patient' ? "#1D9E75" : "#6b7280"} />
               </motion.span>
               <div style={s.cardTitle}>I am a Patient</div>
               <div style={s.cardDesc}>Search & compare medicine prices near you</div>
@@ -284,11 +285,11 @@ function RoleSelector() {
               onClick={() => setSelectedRole('pharmacy')}
             >
               <motion.span
-                style={s.cardIcon}
+                style={{...s.cardIcon, display: 'flex', alignItems: 'center', justifyContent: 'center'}}
                 animate={selectedRole === 'pharmacy' ? { rotate: [0, -10, 10, 0], scale: 1.1 } : { scale: 1 }}
                 transition={{ duration: 0.4 }}
               >
-                💊
+                <Pill size={40} color={selectedRole === 'pharmacy' ? "#1D9E75" : "#6b7280"} />
               </motion.span>
               <div style={s.cardTitle}>I am a Pharmacy</div>
               <div style={s.cardDesc}>List your medicines & manage inventory</div>
@@ -306,7 +307,7 @@ function RoleSelector() {
               whileHover={selectedRole ? { scale: 1.04, backgroundColor: '#178c65' } : {}}
               whileTap={selectedRole ? { scale: 0.97 } : {}}
             >
-              Continue →
+              Continue <ArrowRight size={20} />
             </motion.button>
           </motion.div>
 

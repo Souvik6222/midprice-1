@@ -32,7 +32,7 @@ function AppRoutes() {
         <Route path="home" element={<PatientHome />} />
         <Route path="search" element={<SearchResults />} />
         <Route path="medicine/:id" element={<MedicineDetail />} />
-        <Route path="reserve/:medicineId" element={<Reservation />} />
+        <Route path="reservation/:id" element={<Reservation />} />
         <Route path="reservations" element={<PatientReservations />} />
         <Route path="profile" element={<PatientProfile />} />
         <Route path="saved" element={<PatientSaved />} />

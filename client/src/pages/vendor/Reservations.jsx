@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { ClipboardList, Loader2 } from 'lucide-react';
 
 const s = {
   page: { maxWidth: '960px' },
-  heading: { fontSize: '1.5rem', fontWeight: 700, color: '#1a1a2e', marginBottom: '1.5rem' },
+  heading: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.5rem', fontWeight: 700, color: '#1a1a2e', marginBottom: '1.5rem' },
   tabRow: { display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' },
   tab: { padding: '0.55rem 1.2rem', borderRadius: '10px', border: '1.5px solid #e5e7eb', background: '#fff', color: '#6b7280', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s ease' },
   tabActive: { background: '#1D9E75', color: '#fff', border: '1.5px solid #1D9E75' },
@@ -19,7 +20,7 @@ const s = {
   actionRow: { display: 'flex', gap: '0.5rem' },
   btn: { padding: '0.4rem 0.8rem', borderRadius: '8px', border: 'none', background: '#1D9E75', color: '#fff', fontWeight: 600, fontSize: '0.78rem', cursor: 'pointer', transition: 'background 0.2s ease' },
   btnCancel: { padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1.5px solid #e5e7eb', background: '#fff', color: '#6b7280', fontWeight: 600, fontSize: '0.78rem', cursor: 'pointer' },
-  loading: { textAlign: 'center', padding: '3rem', color: '#1D9E75', fontSize: '1rem', fontWeight: 600 },
+  loading: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '3rem', color: '#1D9E75', fontSize: '1rem', fontWeight: 600 },
   empty: { textAlign: 'center', padding: '2rem', color: '#9ca3af', fontSize: '0.9rem' },
 };
 
@@ -59,7 +60,7 @@ function VendorReservations() {
 
   return (
     <div style={s.page}>
-      <div style={s.heading}>Reservations 📋</div>
+      <div style={s.heading}><ClipboardList size={24} /> Reservations</div>
 
       {error && (
         <div style={{ background: '#fef2f2', border: '2px solid #ef4444', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', color: '#ef4444', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -81,7 +82,7 @@ function VendorReservations() {
           <thead><tr><th style={s.th}>Patient</th><th style={s.th}>Medicine</th><th style={s.th}>Qty</th><th style={s.th}>Code</th><th style={s.th}>Status</th><th style={s.th}>Date</th><th style={s.th}>Action</th></tr></thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={s.loading}>⏳ Loading...</td></tr>
+              <tr><td colSpan={7} style={s.loading}><Loader2 size={18} className="animate-spin" /> Loading...</td></tr>
             ) : reservations.length === 0 ? (
               <tr><td colSpan={7} style={s.empty}>No {activeTab} reservations</td></tr>
             ) : (

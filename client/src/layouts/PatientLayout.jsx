@@ -3,12 +3,14 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import './PatientLayout.css';
 
+import { Home, Search, Bookmark, ClipboardList, User } from 'lucide-react';
+
 const sidebarLinks = [
-  { to: '/patient/home', icon: '🏠', label: 'Home' },
-  { to: '/patient/search', icon: '🔍', label: 'Search' },
-  { to: '/patient/saved', icon: '💾', label: 'Saved' },
-  { to: '/patient/reservations', icon: '📋', label: 'Reservations' },
-  { to: '/patient/profile', icon: '👤', label: 'Profile' },
+  { to: '/patient/home', icon: <Home size={18} />, label: 'Home' },
+  { to: '/patient/search', icon: <Search size={18} />, label: 'Search' },
+  { to: '/patient/saved', icon: <Bookmark size={18} />, label: 'Saved' },
+  { to: '/patient/reservations', icon: <ClipboardList size={18} />, label: 'Reservations' },
+  { to: '/patient/profile', icon: <User size={18} />, label: 'Profile' },
 ];
 
 function PatientLayout() {

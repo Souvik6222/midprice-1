@@ -3,12 +3,14 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import './VendorLayout.css';
 
+import { LayoutDashboard, Pill, ClipboardList, TrendingUp, Settings } from 'lucide-react';
+
 const sidebarLinks = [
-  { to: '/vendor/dashboard', icon: '📊', label: 'Dashboard' },
-  { to: '/vendor/inventory', icon: '💊', label: 'Inventory' },
-  { to: '/vendor/reservations', icon: '📋', label: 'Reservations' },
-  { to: '/vendor/analytics', icon: '📈', label: 'Analytics' },
-  { to: '/vendor/settings', icon: '⚙️', label: 'Settings' },
+  { to: '/vendor/dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
+  { to: '/vendor/inventory', icon: <Pill size={18} />, label: 'Inventory' },
+  { to: '/vendor/reservations', icon: <ClipboardList size={18} />, label: 'Reservations' },
+  { to: '/vendor/analytics', icon: <TrendingUp size={18} />, label: 'Analytics' },
+  { to: '/vendor/settings', icon: <Settings size={18} />, label: 'Settings' },
 ];
 
 function VendorLayout() {

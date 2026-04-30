@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../lib/api';
+import { AlertTriangle, Check, X, Edit2, Trash2 } from 'lucide-react';
 
 const s = {
   page: { maxWidth: '1020px' },
@@ -156,7 +157,7 @@ function Inventory() {
         </motion.button>
       </motion.div>
 
-      {error && <div style={s.error}>⚠️ {error}</div>}
+      {error && <div style={{...s.error, display: 'flex', alignItems: 'center', gap: '6px'}}><AlertTriangle size={16} /> {error}</div>}
 
       <div style={s.tableWrap}>
         <table style={s.table}>
@@ -180,7 +181,7 @@ function Inventory() {
                     <td style={s.td}><span style={st.badge}>{st.text}</span></td>
                     <td style={s.td}>
                       <div style={s.actionRow}>
-                        {isEditing ? (<><button style={s.saveBtn} onClick={() => saveEdit(item._id)} title="Save">✓</button><button style={s.cancelEditBtn} onClick={() => setEditingId(null)} title="Cancel">✗</button></>) : (<><button style={s.iconBtn} onClick={() => startEdit(item)} title="Edit">✏️</button><button style={s.iconBtn} onClick={() => deleteMed(item._id)} title="Delete">🗑️</button></>)}
+                        {isEditing ? (<><button style={s.saveBtn} onClick={() => saveEdit(item._id)} title="Save"><Check size={16} /></button><button style={s.cancelEditBtn} onClick={() => setEditingId(null)} title="Cancel"><X size={16} /></button></>) : (<><button style={s.iconBtn} onClick={() => startEdit(item)} title="Edit"><Edit2 size={16} /></button><button style={s.iconBtn} onClick={() => deleteMed(item._id)} title="Delete"><Trash2 size={16} color="#ef4444" /></button></>)}
                       </div>
                     </td>
                   </tr>
@@ -220,8 +221,8 @@ function Inventory() {
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                     >
-                      <span style={{ flex: 1, fontWeight: 600, color: '#1D9E75' }}>✓ {selectedMedName}</span>
-                      <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }} onClick={() => { setSelectedMedName(''); updateNew('medicineId', ''); setMedSearch(''); }}>✕</button>
+                      <span style={{ flex: 1, fontWeight: 600, color: '#1D9E75', display: 'flex', alignItems: 'center', gap: '4px' }}><Check size={16} /> {selectedMedName}</span>
+                      <button style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 700, fontSize: '1rem', display: 'flex', alignItems: 'center' }} onClick={() => { setSelectedMedName(''); updateNew('medicineId', ''); setMedSearch(''); }}><X size={16} strokeWidth={3} /></button>
                     </motion.div>
                   ) : (
                     <>

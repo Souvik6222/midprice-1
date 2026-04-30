@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
+import { MapPin, Pill, RefreshCcw, Trophy, Clock } from 'lucide-react';
 
 /* ── Hardcoded pharmacy data ── */
 const pharmacyData = [
@@ -414,7 +415,7 @@ function MedicineDetail() {
                         {p.pharmacy?.name || p.pharmacyName}
                         {isBest && <span style={s.bestBadge}>Best Price</span>}
                       </td>
-                      <td style={s.td}>📍 {typeof p.distance === 'number' ? `${p.distance} km` : p.distance}</td>
+                      <td style={s.td}><span style={{display: 'flex', alignItems: 'center', gap: '4px'}}><MapPin size={14} /> {typeof p.distance === 'number' ? `${p.distance} km` : p.distance}</span></td>
                       <td style={{ ...s.td, ...s.priceCell }}>₹{p.sellingPrice}</td>
                       <td style={{ ...s.td, ...s.mrpCell }}>₹{p.mrp}</td>
                       <td style={{ ...s.td, ...s.saveCell }}>₹{savings}</td>
@@ -452,14 +453,14 @@ function MedicineDetail() {
         )}
 
         {activeTab === 'About Medicine' && (
-          <div style={s.placeholder}>
-            💊 About Medicine — Coming soon
+          <div style={{...s.placeholder, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'}}>
+            <Pill size={16} /> About Medicine — Coming soon
           </div>
         )}
 
         {activeTab === 'Alternatives' && (
-          <div style={s.placeholder}>
-            🔄 Alternatives — Coming soon
+          <div style={{...s.placeholder, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'}}>
+            <RefreshCcw size={16} /> Alternatives — Coming soon
           </div>
         )}
       </div>
@@ -467,10 +468,10 @@ function MedicineDetail() {
       {/* ── Sticky Side Card ── */}
       {cheapest && (
         <div style={s.stickyCard}>
-          <div style={s.scLabel}>🏆 Best Deal</div>
+          <div style={{...s.scLabel, display: 'inline-flex', alignItems: 'center', gap: '4px'}}><Trophy size={14} /> Best Deal</div>
           <div style={s.scName}>{cheapest.pharmacy?.name}</div>
-          <div style={s.scAddress}>📍 {cheapest.pharmacy?.address}</div>
-          <div style={s.scTiming}>🕐 {cheapest.pharmacy?.hours}</div>
+          <div style={{...s.scAddress, display: 'flex', alignItems: 'center', gap: '6px'}}><MapPin size={14} /> {cheapest.pharmacy?.address}</div>
+          <div style={{...s.scTiming, display: 'flex', alignItems: 'center', gap: '6px'}}><Clock size={14} /> {cheapest.pharmacy?.hours}</div>
 
           <div style={s.scDivider} />
 

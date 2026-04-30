@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../lib/api';
+import { MapPin, Star, Search as SearchIcon } from 'lucide-react';
 
 /* ── Filter chip definitions ── */
 const filterOptions = [
@@ -454,7 +455,9 @@ function SearchResults() {
 
                 <div style={s.cardMiddle}>
                   <span style={s.pharmacyName}>{med.pharmacy}</span>
-                  <span style={s.distance}>📍 {med.distance}</span>
+                  <span style={{...s.distance, display: 'flex', alignItems: 'center', gap: '4px'}}>
+                    <MapPin size={12} /> {med.distance}
+                  </span>
                   <span>
                     <span style={{ ...s.stockDot, background: med.inStock ? '#22c55e' : '#ef4444' }} />
                     <span style={{ ...s.stockText, color: med.inStock ? '#22c55e' : '#ef4444' }}>
@@ -462,7 +465,11 @@ function SearchResults() {
                     </span>
                   </span>
                   {savings > 0 && <span style={s.savingsBadge}>Save ₹{savings}</span>}
-                  {isCheapest && <span style={s.lowestBadge}>⭐ Lowest Price</span>}
+                  {isCheapest && (
+                    <span style={{...s.lowestBadge, display: 'inline-flex', alignItems: 'center', gap: '4px'}}>
+                      <Star size={10} fill="#1D9E75" /> Lowest Price
+                    </span>
+                  )}
                 </div>
 
                 <div style={s.cardBottom}>

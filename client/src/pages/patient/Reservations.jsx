@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { ClipboardList, Loader2 } from 'lucide-react';
 
 const s = {
   page: { maxWidth: '960px' },
-  heading: { fontSize: '1.5rem', fontWeight: 700, color: '#1a1a2e', marginBottom: '1.5rem' },
+  heading: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.5rem', fontWeight: 700, color: '#1a1a2e', marginBottom: '1.5rem' },
   tableWrap: { background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', border: '1px solid #f3f4f6' },
   table: { width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' },
   th: { padding: '0.85rem 1rem', textAlign: 'left', fontWeight: 700, color: '#374151', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '2px solid #f3f4f6', background: '#fafbfc' },
@@ -14,7 +15,7 @@ const s = {
   badgeReady: { display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '8px', background: '#dbeafe', color: '#1e40af', fontSize: '0.75rem', fontWeight: 600 },
   badgeCompleted: { display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '8px', background: '#d1fae5', color: '#065f46', fontSize: '0.75rem', fontWeight: 600 },
   badgeCancelled: { display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '8px', background: '#fee2e2', color: '#991b1b', fontSize: '0.75rem', fontWeight: 600 },
-  loading: { textAlign: 'center', padding: '3rem', color: '#1D9E75', fontSize: '1rem', fontWeight: 600 },
+  loading: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '3rem', color: '#1D9E75', fontSize: '1rem', fontWeight: 600 },
   empty: { textAlign: 'center', padding: '2rem', color: '#9ca3af', fontSize: '0.9rem' },
 };
 
@@ -42,11 +43,11 @@ function PatientReservations() {
 
   useEffect(() => { fetchReservations(); }, []);
 
-  if (loading) return <div style={s.loading}>⏳ Loading reservations...</div>;
+  if (loading) return <div style={s.loading}><Loader2 size={24} className="animate-spin" /> Loading reservations...</div>;
 
   return (
     <div style={s.page}>
-      <div style={s.heading}>My Reservations 📋</div>
+      <div style={s.heading}><ClipboardList size={24} /> My Reservations</div>
 
       {error && (
         <div style={{ background: '#fef2f2', border: '2px solid #ef4444', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', color: '#ef4444', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
