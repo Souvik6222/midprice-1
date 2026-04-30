@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import api from '../../lib/api';
 import { ShieldCheck, CheckCircle, XCircle, Clock, Eye, Users, FileText, LogOut } from 'lucide-react';
 
@@ -7,7 +7,6 @@ const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 export default function AdminDashboard() {
   const [secret, setSecret] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
-  const [vendors, setVendors] = useState([]);
   const [allVendors, setAllVendors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
@@ -20,8 +19,7 @@ export default function AdminDashboard() {
   const fetchVendors = async (s) => {
     setLoading(true); setErr('');
     try {
-      const { data } = await api.get(`/api/vendor/verification/admin/pending?secret=${s}`);
-      setVendors(data.vendors || []);
+      await api.get(`/api/vendor/verification/admin/pending?secret=${s}`);
       // Also fetch all vendors for stats
       const { data: all } = await api.get(`/api/vendor/verification/admin/all?secret=${s}`);
       setAllVendors(all.vendors || []);

@@ -74,7 +74,7 @@ async function fetchRoute(from, to) {
   return null;
 }
 
-const SIDEBAR_W = '380px';
+
 
 export default function PatientSearch() {
   const user     = useAuthStore(s => s.user);

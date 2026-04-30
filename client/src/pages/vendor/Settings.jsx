@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../lib/api';
-import useAuthStore from '../../store/authStore';
 import { MapPin, Clock, Save, Navigation } from 'lucide-react';
 
 export default function VendorSettings() {
-  const user = useAuthStore(s => s.user);
   const [form, setForm] = useState({ name: '', address: '', hours: '', lat: '', lng: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
