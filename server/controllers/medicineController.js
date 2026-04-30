@@ -65,6 +65,8 @@ const searchMedicines = async (req, res) => {
             name: pharmacy.name,
             address: pharmacy.address,
             hours: pharmacy.hours,
+            lat: pharmacy.lat,
+            lng: pharmacy.lng,
           },
           mrp: item.mrp,
           sellingPrice: item.sellingPrice,
@@ -72,7 +74,7 @@ const searchMedicines = async (req, res) => {
           distance: Math.round(distance * 10) / 10,
         };
       })
-      .filter((item) => item.distance <= 5)
+      .filter((item) => !userLat && !userLng ? true : item.distance <= 50)
       .sort((a, b) => a.sellingPrice - b.sellingPrice);
 
     res.status(200).json({ count: results.length, results });
