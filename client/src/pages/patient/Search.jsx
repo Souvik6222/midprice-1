@@ -508,25 +508,25 @@ const s = {
     transition: 'max-height 0.35s ease',
     overflow: 'hidden',
   },
-  bottomPanelOpen: { maxHeight: '55vh' },
-  bottomPanelClosed: { maxHeight: '70px' },
+  bottomPanelOpen: { maxHeight: '35vh' },
+  bottomPanelClosed: { maxHeight: '56px' },
 
   dragBar: {
-    padding: '0.7rem 1.25rem', cursor: 'pointer',
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+    padding: '0.5rem 1.25rem', cursor: 'pointer',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
   },
   dragHandle: { width: '36px', height: '4px', borderRadius: '2px', background: '#d1d5db' },
   resultCount: { fontSize: '0.85rem', fontWeight: 700, color: '#111827' },
 
   resultsList: {
-    padding: '0 1rem 1rem', overflowY: 'auto', maxHeight: 'calc(55vh - 70px)',
-    display: 'flex', flexDirection: 'column', gap: '8px',
+    padding: '0 0.75rem 0.75rem', overflowY: 'auto', maxHeight: 'calc(35vh - 56px)',
+    display: 'flex', flexDirection: 'column', gap: '6px',
   },
 
   emptyMsg: { textAlign: 'center', padding: '1.5rem', color: '#9ca3af', fontSize: '0.88rem' },
 
   card: {
-    padding: '0.85rem 1rem', borderRadius: '14px', border: '1.5px solid #f3f4f6',
+    padding: '0.6rem 0.85rem', borderRadius: '12px', border: '1.5px solid #f3f4f6',
     cursor: 'pointer', transition: 'all 0.15s ease', position: 'relative', overflow: 'hidden',
   },
   cardActive: { border: '1.5px solid #1D9E75', background: '#f0fdf7' },
@@ -538,20 +538,20 @@ const s = {
     padding: '0.15rem 0.5rem', borderRadius: '0 14px 0 8px',
     letterSpacing: '0.3px',
   },
-  cardRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' },
+  cardRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' },
   cardLeft: { flex: 1, minWidth: 0 },
-  medName: { fontWeight: 700, fontSize: '0.92rem', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  shopName: { fontSize: '0.8rem', color: '#1D9E75', fontWeight: 600, marginTop: '2px' },
-  shopAddr: { fontSize: '0.73rem', color: '#9ca3af', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  medName: { fontWeight: 700, fontSize: '0.85rem', color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  shopName: { fontSize: '0.75rem', color: '#1D9E75', fontWeight: 600, marginTop: '1px' },
+  shopAddr: { fontSize: '0.68rem', color: '#9ca3af', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   cardRight: { textAlign: 'right', flexShrink: 0 },
   price: { fontWeight: 800, fontSize: '1.15rem', color: '#111827' },
   dist: { fontSize: '0.72rem', color: '#6b7280', marginTop: '1px' },
   stockTag: { fontSize: '0.65rem', fontWeight: 700, padding: '0.12rem 0.4rem', borderRadius: '6px', marginTop: '3px', display: 'inline-block' },
 
   dirBtn: {
-    marginTop: '0.5rem', width: '100%', padding: '0.45rem',
-    background: '#111827', color: '#fff', border: 'none', borderRadius: '8px',
-    fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+    marginTop: '0.35rem', padding: '0.3rem 0.7rem',
+    background: '#111827', color: '#fff', border: 'none', borderRadius: '6px',
+    fontWeight: 600, fontSize: '0.7rem', cursor: 'pointer',
+    display: 'inline-flex', alignItems: 'center', gap: '4px',
   },
 };
