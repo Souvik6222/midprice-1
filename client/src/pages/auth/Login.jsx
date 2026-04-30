@@ -250,13 +250,32 @@ function Login() {
 
   const handleVerify = async () => {
     const otpValue = otp.join('');
+    // Map 'pharmacy' → 'vendor' (what the backend User model expects)
+    const backendRole = role === 'pharmacy' ? 'vendor' : role;
     try {
-      const { data } = await api.post('/api/auth/login', { phone, otp: otpValue });
+      let data;
+      try {
+        // Try login first
+        const res = await api.post('/api/auth/login', { phone, otp: otpValue });
+        data = res.data;
+      } catch (loginErr) {
+        // If user not found, auto-register them
+        if (loginErr.response?.status === 404) {
+          const res = await api.post('/api/auth/register', {
+            phone,
+            role: backendRole,
+            name: backendRole === 'vendor' ? 'Pharmacy' : 'Patient',
+          });
+          data = res.data;
+        } else {
+          throw loginErr;
+        }
+      }
       setUser(data.user, data.token);
       if (data.user.role === 'vendor' || data.user.role === 'pharmacy') {
         navigate('/vendor/dashboard');
       } else {
-        navigate('/patient/home');
+        navigate('/patient/search');
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
