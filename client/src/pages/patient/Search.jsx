@@ -232,7 +232,7 @@ export default function PatientSearch() {
                       background: '#111827', color: '#fff', border: 'none', borderRadius: '8px',
                       fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-                    }}>🧭 Get Directions</button>
+                    }}><Navigation size={13} /> Get Directions</button>
                   </div>
                 </Popup>
               </Marker>

@@ -47,7 +47,7 @@ export default function VendorDashboard() {
           </div>
           {pharmacy.lat && pharmacy.lng ? (
             <div style={s.coordBadge}>
-              📍 {Number(pharmacy.lat).toFixed(4)}, {Number(pharmacy.lng).toFixed(4)}
+              <MapPin size={12} color="#1D9E75" /> {Number(pharmacy.lat).toFixed(4)}, {Number(pharmacy.lng).toFixed(4)}
             </div>
           ) : (
             <div style={s.noCoord}>Location not set</div>
@@ -79,7 +79,7 @@ export default function VendorDashboard() {
       {/* Low stock alerts */}
       {lowStock.length > 0 && (
         <div style={s.section}>
-          <div style={s.sectionTitle}>⚠ Low Stock Alerts</div>
+          <div style={s.sectionTitle}><AlertCircle size={16} color="#ef4444" /> Low Stock Alerts</div>
           <div style={s.alertGrid}>
             {lowStock.map(item => (
               <div key={item._id} style={s.alertCard}>
