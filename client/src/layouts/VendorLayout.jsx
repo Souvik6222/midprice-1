@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import { LayoutDashboard, Package, Settings, LogOut, ShieldCheck, Menu, X } from 'lucide-react';
 import VendorVerification from '../pages/vendor/Verification';
+import Logo from '../components/Logo';
 
 const links = [
   { to: '/vendor/dashboard', icon: <LayoutDashboard size={17} />, label: 'Dashboard' },
@@ -26,8 +27,7 @@ function VendorLayout() {
         {/* ─── MOBILE TOP BAR ─── */}
         <header className="vl-mobile-header">
           <div className="vl-mobile-brand">
-            <span className="vl-brand-dot" />
-            MedPrice
+            <Logo variant="dark" height={24} />
           </div>
           <button className="vl-hamburger" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -38,8 +38,7 @@ function VendorLayout() {
         {mobileOpen && <div className="vl-overlay" onClick={() => setMobileOpen(false)} />}
         <aside className={`vl-sidebar ${mobileOpen ? 'vl-sidebar-open' : ''}`}>
           <div className="vl-brand-section">
-            <span className="vl-brand-dot" />
-            <span className="vl-brand-text">MedPrice</span>
+            <Logo variant="dark" height={24} />
             <div className="vl-brand-sub">Pharmacy Portal</div>
           </div>
 
@@ -142,11 +141,7 @@ const responsiveCSS = `
   }
 
   .vl-brand-section {
-    padding: 1.25rem 1.25rem 1rem;
-    font-weight: 800; font-size: 1.15rem;
-    color: #1D9E75; letter-spacing: -0.3px;
-    display: flex; align-items: center;
-    gap: 6px; flex-wrap: wrap;
+    padding: 1.25rem 1rem 1rem;
     border-bottom: 1px solid #f3f4f6;
   }
   .vl-brand-dot {

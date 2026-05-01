@@ -6,6 +6,7 @@ import useAuthStore from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { User, Phone, Shield, LogOut, Navigation, X, Search, MapPin } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
+import Logo from '../../components/Logo';
 
 /* ─── Fix default marker icons ─── */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -180,7 +181,7 @@ export default function PatientSearch() {
       
       {/* ─── NAV BAR ─── */}
       <div className="ps-nav-bar">
-        <div className="ps-brand"><span className="ps-brand-dot" /> MedPrice</div>
+        <div className="ps-brand"><Logo variant="dark" height={24} /></div>
         <div className="ps-nav-right" ref={accountRef}>
           <button className="ps-avatar-btn" onClick={() => setShowAccount(!showAccount)}>{initials}</button>
           {showAccount && (
@@ -344,9 +345,8 @@ const responsiveCSS = `
   .ps-shell { width: 100%; height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; overflow: hidden; }
 
   /* Nav */
-  .ps-nav-bar { height: 52px; min-height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; background: #fff; border-bottom: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.04); z-index: 100; }
-  .ps-brand { font-weight: 800; font-size: 1.15rem; color: #111827; display: flex; align-items: center; gap: 6px; }
-  .ps-brand-dot { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; }
+  .ps-nav-bar { height: 52px; min-height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; background: #fff; border-bottom: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.04); z-index: 100; }
+  .ps-brand { display: flex; align-items: center; }
   .ps-nav-right { position: relative; }
   .ps-avatar-btn { width: 34px; height: 34px; border-radius: 50%; background: #1D9E75; color: #fff; border: none; cursor: pointer; font-weight: 800; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 

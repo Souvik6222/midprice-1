@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import useAuthStore from '../../store/authStore';
 import api from '../../lib/api';
 import { ShieldCheck, Zap, Activity } from 'lucide-react';
+import Logo from '../../components/Logo';
 
 const s = {
   container: {
@@ -257,20 +258,7 @@ const s = {
   },
 };
 
-const MedPriceLogo = ({ style }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', ...style }}>
-    <svg width="75" height="30" viewBox="0 0 75 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="70" height="30" rx="15" fill="#1D9E75" />
-      <path d="M 35 0 L 55 0 C 63.28 0 70 6.72 70 15 C 70 23.28 63.28 30 55 30 L 35 30 Z" fill="white" />
-      <path d="M 35 0 L 55 0 C 63.28 0 70 6.72 70 15 C 70 23.28 63.28 30 55 30 L 35 30" stroke="#1D9E75" strokeWidth="2.5" />
-      <path d="M 52.5 10 L 52.5 20 M 48.5 16 L 52.5 20 L 56.5 16" stroke="#1D9E75" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-    <div style={s.appName}>
-      <span style={s.appNameMed}>Med</span>
-      <span style={s.appNamePrice}>Price</span>
-    </div>
-  </div>
-);
+
 
 function Login() {
   const location = useLocation();
@@ -365,7 +353,7 @@ function Login() {
           transition={{ delay: 0.2, duration: 0.8, type: 'spring', damping: 20 }}
         >
           <div style={s.logoRow}>
-            <MedPriceLogo />
+            <Logo variant="light" height={32} />
           </div>
           
           <h1 style={s.heroTitle}>
