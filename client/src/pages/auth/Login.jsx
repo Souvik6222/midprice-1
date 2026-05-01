@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import useAuthStore from '../../store/authStore';
 import api from '../../lib/api';
+import { ShieldCheck, Zap, Activity } from 'lucide-react';
 
 const s = {
   container: {
@@ -13,8 +14,8 @@ const s = {
     overflow: 'hidden',
   },
   leftPanel: {
-    flex: 1,
-    background: 'linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
+    flex: 1.2,
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -23,44 +24,87 @@ const s = {
     position: 'relative',
     overflow: 'hidden',
   },
-  leftGlow: {
+  meshGradient: {
     position: 'absolute',
-    top: '20%',
-    left: '30%',
-    width: '300px',
-    height: '300px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(29,158,117,0.15) 0%, transparent 70%)',
+    top: '-50%',
+    left: '-50%',
+    width: '200%',
+    height: '200%',
+    background: `
+      radial-gradient(circle at 50% 50%, rgba(29, 158, 117, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 40%)
+    `,
+    filter: 'blur(60px)',
     pointerEvents: 'none',
-    filter: 'blur(40px)',
+    zIndex: 0,
   },
-  leftGlow2: {
-    position: 'absolute',
-    bottom: '10%',
-    right: '20%',
-    width: '200px',
-    height: '200px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(29,158,117,0.1) 0%, transparent 70%)',
-    pointerEvents: 'none',
-    filter: 'blur(30px)',
+  glassCard: {
+    position: 'relative',
+    zIndex: 1,
+    background: 'rgba(255, 255, 255, 0.03)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    borderRadius: '24px',
+    padding: '3rem',
+    maxWidth: '500px',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+  },
+  logoRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    marginBottom: '2rem',
+  },
+  logoIcon: {
+    background: 'linear-gradient(135deg, #1D9E75 0%, #10b981 100%)',
+    padding: '0.75rem',
+    borderRadius: '16px',
+    color: 'white',
+    boxShadow: '0 10px 25px -5px rgba(29, 158, 117, 0.4)',
   },
   appName: {
-    fontSize: '3rem',
+    fontSize: '2rem',
     fontWeight: 800,
-    color: '#fff',
-    letterSpacing: '-1.5px',
-    marginBottom: '0.75rem',
-    zIndex: 1,
+    letterSpacing: '-1px',
+    background: 'linear-gradient(to right, #fff, #94a3b8)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
   },
-  tagline: {
-    fontSize: '1.05rem',
-    color: 'rgba(255,255,255,0.55)',
-    fontWeight: 400,
-    textAlign: 'center',
-    maxWidth: '300px',
-    lineHeight: 1.7,
-    zIndex: 1,
+  heroTitle: {
+    fontSize: '3.5rem',
+    fontWeight: 800,
+    lineHeight: 1.1,
+    marginBottom: '1.5rem',
+    letterSpacing: '-1.5px',
+    color: '#fff',
+  },
+  heroHighlight: {
+    color: '#1D9E75',
+  },
+  heroSubtitle: {
+    fontSize: '1.1rem',
+    lineHeight: 1.6,
+    color: '#94a3b8',
+    marginBottom: '2.5rem',
+  },
+  featureList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem',
+  },
+  featureItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+    color: '#cbd5e1',
+    fontSize: '0.95rem',
+    fontWeight: 500,
+  },
+  featureIcon: {
+    color: '#1D9E75',
+    background: 'rgba(29, 158, 117, 0.1)',
+    padding: '0.4rem',
+    borderRadius: '8px',
   },
   rightPanel: {
     flex: 1,
@@ -69,7 +113,14 @@ const s = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '3rem',
-    background: 'var(--color-bg, #f7f5f2)',
+    backgroundImage: 'url("https://i.pinimg.com/736x/ae/7b/d3/ae7bd364ac5587581ab6aeb5593a9bde.jpg")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundColor: '#ffffff',
+    position: 'relative',
+    borderTopLeftRadius: '32px',
+    borderBottomLeftRadius: '32px',
+    boxShadow: '-20px 0 50px rgba(0,0,0,0.2)',
   },
   formCard: {
     width: '100%',
@@ -218,17 +269,17 @@ function Login() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const otpRefs = useRef([]);
-  const glowRef = useRef(null);
-  const glow2Ref = useRef(null);
+  const meshRef = useRef(null);
   const setUser = useAuthStore((state) => state.setUser);
 
-  /* GSAP: Floating glow orbs */
   useEffect(() => {
-    if (glowRef.current) {
-      gsap.to(glowRef.current, { x: 25, y: -18, duration: 7, ease: 'sine.inOut', repeat: -1, yoyo: true });
-    }
-    if (glow2Ref.current) {
-      gsap.to(glow2Ref.current, { x: -20, y: 12, duration: 9, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    if (meshRef.current) {
+      gsap.to(meshRef.current, {
+        rotation: 360,
+        duration: 150,
+        repeat: -1,
+        ease: "linear"
+      });
     }
   }, []);
 
@@ -286,30 +337,47 @@ function Login() {
 
   return (
     <div style={s.container}>
-      {/* Left Panel */}
+      {/* Left Panel - Brand & Value Prop */}
       <motion.div
         style={s.leftPanel}
-        initial={{ x: -80, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
       >
-        <div ref={glowRef} style={s.leftGlow} />
-        <div ref={glow2Ref} style={s.leftGlow2} />
+        <div ref={meshRef} style={s.meshGradient} />
+        
         <motion.div
-          style={s.appName}
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
+          style={s.glassCard}
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8, type: 'spring', damping: 20 }}
         >
-          MedPrice
-        </motion.div>
-        <motion.div
-          style={s.tagline}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-        >
-          Secure login with OTP verification. No passwords needed.
+          <div style={s.logoRow}>
+            <div style={s.logoIcon}>
+              <Activity size={28} strokeWidth={2.5} />
+            </div>
+            <div style={s.appName}>MedPrice</div>
+          </div>
+          
+          <h1 style={s.heroTitle}>
+            Smarter healthcare <br />
+            <span style={s.heroHighlight}>pricing for all.</span>
+          </h1>
+          
+          <p style={s.heroSubtitle}>
+            Secure login with OTP verification. No passwords needed. Join the transparent marketplace today.
+          </p>
+          
+          <div style={s.featureList}>
+            <motion.div style={s.featureItem} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+              <div style={s.featureIcon}><ShieldCheck size={18} /></div>
+              <span>Verified local pharmacies</span>
+            </motion.div>
+            <motion.div style={s.featureItem} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
+              <div style={s.featureIcon}><Zap size={18} /></div>
+              <span>Real-time price comparisons</span>
+            </motion.div>
+          </div>
         </motion.div>
       </motion.div>
 
