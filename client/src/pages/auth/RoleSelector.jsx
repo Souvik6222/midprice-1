@@ -270,11 +270,14 @@ function RoleSelector() {
   };
 
   return (
-    <div style={s.container}>
+    <>
+      <style>{responsiveCSS}</style>
+      <div style={s.container} className="auth-container">
       
       {/* Left Panel - Brand & Value Prop */}
       <motion.div
         style={s.leftPanel}
+        className="auth-left-panel"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -291,16 +294,16 @@ function RoleSelector() {
             <Logo variant="light" height={32} />
           </div>
           
-          <h1 style={s.heroTitle}>
+          <h1 style={s.heroTitle} className="auth-hero-title">
             Smarter healthcare <br />
             <span style={s.heroHighlight}>pricing for all.</span>
           </h1>
           
-          <p style={s.heroSubtitle}>
+          <p style={s.heroSubtitle} className="auth-hero-subtitle">
             Join the transparent marketplace connecting patients with local pharmacies for the best deals on essential medicines.
           </p>
           
-          <div style={s.featureList}>
+          <div style={s.featureList} className="auth-feature-list">
             <motion.div style={s.featureItem} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
               <div style={s.featureIcon}><ShieldCheck size={18} /></div>
               <span>Verified local pharmacies</span>
@@ -316,6 +319,7 @@ function RoleSelector() {
       {/* Right Panel - Role Selection */}
       <motion.div
         style={s.rightPanel}
+        className="auth-right-panel"
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, type: 'spring', damping: 25 }}
@@ -440,9 +444,44 @@ function RoleSelector() {
           </motion.div>
         </div>
       </motion.div>
-    </div>
+      </div>
+    </>
   );
 }
+
+const responsiveCSS = `
+  @media (max-width: 900px) {
+    .auth-container {
+      flex-direction: column !important;
+      overflow-y: auto !important;
+    }
+    .auth-left-panel {
+      flex: none !important;
+      padding: 3rem 1.5rem 4rem 1.5rem !important;
+      min-height: auto !important;
+    }
+    .auth-right-panel {
+      flex: 1 !important;
+      border-top-left-radius: 32px !important;
+      border-top-right-radius: 32px !important;
+      border-bottom-left-radius: 0 !important;
+      margin-top: -32px !important;
+      padding: 2.5rem 1.5rem !important;
+      width: 100% !important;
+    }
+  }
+  @media (max-width: 600px) {
+    .auth-hero-title {
+      font-size: 2.5rem !important;
+    }
+    .auth-hero-subtitle {
+      font-size: 1rem !important;
+    }
+    .auth-feature-list {
+      display: none !important;
+    }
+  }
+`;
 
 export default RoleSelector;
 
