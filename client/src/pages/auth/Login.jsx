@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import useAuthStore from '../../store/authStore';
 import api from '../../lib/api';
-import { ShieldCheck, Zap, Activity } from 'lucide-react';
+import { ShieldCheck, Zap } from 'lucide-react';
 import Logo from '../../components/Logo';
 
 const s = {

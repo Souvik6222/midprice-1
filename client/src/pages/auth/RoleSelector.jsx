@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
-import { Hospital, Pill, ShieldCheck, Zap, Activity } from 'lucide-react';
+import { Hospital, Pill, ShieldCheck, Zap } from 'lucide-react';
 import Logo from '../../components/Logo';
 
 const s = {
