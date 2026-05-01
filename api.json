@@ -1,0 +1,194 @@
+{
+	"info": {
+		"_postman_id": "medprice-full-collection",
+		"name": "MedPrice API - COMPLETE",
+		"description": "Complete API Documentation for MedPrice SaaS Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"9876543210\",\n    \"password\": \"password123\",\n    \"role\": \"vendor\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+					}
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"9876543210\",\n    \"password\": \"password123\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Medicines (Public)",
+			"item": [
+				{
+					"name": "Search Medicines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/medicines/search?q=aspirin&lat=22.5&lng=88.3",
+							"host": ["{{baseUrl}}"],
+							"path": ["medicines", "search"],
+							"query": [
+								{ "key": "q", "value": "aspirin" },
+								{ "key": "lat", "value": "22.5" },
+								{ "key": "lng", "value": "88.3" }
+							]
+						}
+					}
+				},
+				{
+					"name": "List All Medicines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{baseUrl}}/medicines/list", "host": ["{{baseUrl}}"], "path": ["medicines", "list"] }
+					}
+				},
+				{
+					"name": "Get Medicine Prices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{baseUrl}}/medicines/:id/prices", "host": ["{{baseUrl}}"], "path": ["medicines", ":id", "prices"], "variable": [{ "key": "id", "value": "medicine_id_here" }] }
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Vendor Inventory",
+			"item": [
+				{
+					"name": "Get My Inventory",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"url": { "raw": "{{baseUrl}}/vendor/inventory", "host": ["{{baseUrl}}"], "path": ["vendor", "inventory"] }
+					}
+				},
+				{
+					"name": "Add Item",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"medicineId\": \"id\",\n    \"price\": 100,\n    \"stock\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/vendor/inventory", "host": ["{{baseUrl}}"], "path": ["vendor", "inventory"] }
+					}
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"method": "PATCH",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"price\": 120,\n    \"stock\": 15\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": { "raw": "{{baseUrl}}/vendor/inventory/:id", "host": ["{{baseUrl}}"], "path": ["vendor", "inventory", ":id"], "variable": [{ "key": "id", "value": "item_id" }] }
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Pharmacy & Verification",
+			"item": [
+				{
+					"name": "Get Pharmacy Info",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"url": { "raw": "{{baseUrl}}/vendor/pharmacy", "host": ["{{baseUrl}}"], "path": ["vendor", "pharmacy"] }
+					}
+				},
+				{
+					"name": "Update Pharmacy",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"url": { "raw": "{{baseUrl}}/vendor/pharmacy", "host": ["{{baseUrl}}"], "path": ["vendor", "pharmacy"] }
+					}
+				},
+				{
+					"name": "Check Verification Status",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"url": { "raw": "{{baseUrl}}/vendor/verification/status", "host": ["{{baseUrl}}"], "path": ["vendor", "verification", "status"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Reservations",
+			"item": [
+				{
+					"name": "Create Reservation (Patient)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"url": { "raw": "{{baseUrl}}/reservations", "host": ["{{baseUrl}}"], "path": ["reservations"] }
+					}
+				},
+				{
+					"name": "List Pharmacy Reservations",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }],
+						"url": { "raw": "{{baseUrl}}/vendor/reservations", "host": ["{{baseUrl}}"], "path": ["vendor", "reservations"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Admin Panel",
+			"item": [
+				{
+					"name": "List Pending Vendors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{baseUrl}}/vendor/verification/admin/pending?secret={{adminSecret}}", "host": ["{{baseUrl}}"], "path": ["vendor", "verification", "admin", "pending"], "query": [{ "key": "secret", "value": "{{adminSecret}}" }] }
+					}
+				},
+				{
+					"name": "Approve Vendor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": { "raw": "{{baseUrl}}/vendor/verification/admin/approve/:userId?secret={{adminSecret}}", "host": ["{{baseUrl}}"], "path": ["vendor", "verification", "admin", "approve", ":userId"], "query": [{ "key": "secret", "value": "{{adminSecret}}" }], "variable": [{ "key": "userId", "value": "target_user_id" }] }
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "https://midprice-1.onrender.com/api" },
+		{ "key": "token", "value": "jwt_token_here" },
+		{ "key": "adminSecret", "value": "medprice-admin-2026" }
+	]
+}
