@@ -55,20 +55,22 @@ const s = {
     gap: '0.75rem',
     marginBottom: '2rem',
   },
-  logoIcon: {
-    background: 'linear-gradient(135deg, #1D9E75 0%, #10b981 100%)',
-    padding: '0.75rem',
-    borderRadius: '16px',
-    color: 'white',
-    boxShadow: '0 10px 25px -5px rgba(29, 158, 117, 0.4)',
+  logoPill: {
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
   },
   appName: {
-    fontSize: '2rem',
+    fontSize: '2.2rem',
     fontWeight: 800,
-    letterSpacing: '-1px',
-    background: 'linear-gradient(to right, #fff, #94a3b8)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
+    letterSpacing: '-1.5px',
+    display: 'flex',
+  },
+  appNameMed: {
+    color: '#fff',
+  },
+  appNamePrice: {
+    color: '#1D9E75',
   },
   heroTitle: {
     fontSize: '3.5rem',
@@ -242,6 +244,21 @@ const cardVariants = {
 
 
 
+const MedPriceLogo = ({ style }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', ...style }}>
+    <svg width="75" height="30" viewBox="0 0 75 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="70" height="30" rx="15" fill="#1D9E75" />
+      <path d="M 35 0 L 55 0 C 63.28 0 70 6.72 70 15 C 70 23.28 63.28 30 55 30 L 35 30 Z" fill="white" />
+      <path d="M 35 0 L 55 0 C 63.28 0 70 6.72 70 15 C 70 23.28 63.28 30 55 30 L 35 30" stroke="#1D9E75" strokeWidth="2.5" />
+      <path d="M 52.5 10 L 52.5 20 M 48.5 16 L 52.5 20 L 56.5 16" stroke="#1D9E75" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+    <div style={s.appName}>
+      <span style={s.appNameMed}>Med</span>
+      <span style={s.appNamePrice}>Price</span>
+    </div>
+  </div>
+);
+
 function RoleSelector() {
   const [selectedRole, setSelectedRole] = useState(null);
   const navigate = useNavigate();
@@ -283,10 +300,7 @@ function RoleSelector() {
           transition={{ delay: 0.2, duration: 0.8, type: 'spring', damping: 20 }}
         >
           <div style={s.logoRow}>
-            <div style={s.logoIcon}>
-              <Activity size={28} strokeWidth={2.5} />
-            </div>
-            <div style={s.appName}>MedPrice</div>
+            <MedPriceLogo />
           </div>
           
           <h1 style={s.heroTitle}>
